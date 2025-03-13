@@ -1,12 +1,12 @@
-
-
+import { Button } from "./components/ui/button"
+import { LoginForm } from "./pages/auth/LoginForm"
 function App() {
   
 
   return (
-    <h1 className="text-7xl font-bold underline">
-    Hello world!
-  </h1>
+    <section className="bg-gray-50 grid justify-center items-center h-screen">
+    <LoginForm />
+    </section>
   )
 }
 
