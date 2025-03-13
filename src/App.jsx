@@ -1,13 +1,16 @@
-import { Button } from "./components/ui/button"
-import { LoginForm } from "./pages/auth/LoginForm"
+import Dashboard from "./pages/dashboard/Dashboard";
+import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+import ImageGallery from "./pages/dashboard/ImageGallery";
 function App() {
-  
-
   return (
-    <section className="bg-gray-50 grid justify-center items-center h-screen">
-    <LoginForm />
-    </section>
-  )
+    <Router>
+      <Dashboard>
+        <Routes>
+          <Route path="/" element={<ImageGallery />} />
+        </Routes>
+      </Dashboard>
+    </Router>
+  );
 }
 
-export default App
+export default App;
