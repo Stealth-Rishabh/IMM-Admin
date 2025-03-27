@@ -203,9 +203,9 @@ export default function Events() {
   };
 
   return (
-    <div className=" mx-auto py- space-y-8">
-      <div className="bg-white dark:bg-gray-950 rounded-xl border shadow-sm p-6">
-        <h1 className="text-2xl font-bold mb-6">Event Management</h1>
+    <div className="mx-auto space-y-8">
+      <div className="p-6 bg-white border shadow-sm dark:bg-gray-950 rounded-xl">
+        <h1 className="mb-6 text-2xl font-bold">Event Management</h1>
 
         <Tabs defaultValue="create">
           <TabsList className="mb-6">
@@ -217,7 +217,7 @@ export default function Events() {
 
           <TabsContent value="create" className="space-y-6">
             <form id="event-form" action={handleSubmit} className="space-y-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
                 <div className="space-y-2">
                   <label htmlFor="title" className="text-sm font-medium">
                     Event Title
@@ -291,7 +291,7 @@ export default function Events() {
                         >
                           {tag}
                           <X
-                            className="h-3 w-3 cursor-pointer"
+                            className="w-3 h-3 cursor-pointer"
                             onClick={() => handleRemoveTag(tag)}
                           />
                         </Badge>
@@ -301,15 +301,15 @@ export default function Events() {
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
                 <div className="space-y-2">
                   <label className="text-sm font-medium">Thumbnail Image</label>
-                  <div className="border rounded-lg p-4 space-y-4">
+                  <div className="p-4 space-y-4 border rounded-lg">
                     <div
-                      className="border-2 border-dashed rounded-lg p-6 flex flex-col items-center justify-center cursor-pointer hover:bg-muted/50 transition-colors"
+                      className="flex flex-col items-center justify-center p-6 transition-colors border-2 border-dashed rounded-lg cursor-pointer hover:bg-muted/50"
                       onClick={() => thumbnailInputRef.current?.click()}
                     >
-                      <ImagePlus className="h-10 w-10 text-muted-foreground mb-2" />
+                      <ImagePlus className="w-10 h-10 mb-2 text-muted-foreground" />
                       <p className="text-sm text-muted-foreground">
                         Click to upload thumbnail
                       </p>
@@ -323,7 +323,7 @@ export default function Events() {
                     </div>
 
                     {thumbnailPreview && (
-                      <div className="relative aspect-video rounded-lg overflow-hidden">
+                      <div className="relative overflow-hidden rounded-lg aspect-video">
                         <img
                           src={thumbnailPreview || "/placeholder.svg"}
                           alt="Thumbnail preview"
@@ -334,10 +334,10 @@ export default function Events() {
                           type="button"
                           variant="destructive"
                           size="icon"
-                          className="absolute top-2 right-2 h-6 w-6 rounded-full"
+                          className="absolute w-6 h-6 rounded-full top-2 right-2"
                           onClick={() => setThumbnailPreview(null)}
                         >
-                          <X className="h-3 w-3" />
+                          <X className="w-3 h-3" />
                         </Button>
                       </div>
                     )}
@@ -346,12 +346,12 @@ export default function Events() {
 
                 <div className="space-y-2">
                   <label className="text-sm font-medium">Gallery Images</label>
-                  <div className="border rounded-lg p-4 space-y-4">
+                  <div className="p-4 space-y-4 border rounded-lg">
                     <div
-                      className="border-2 border-dashed rounded-lg p-6 flex flex-col items-center justify-center cursor-pointer hover:bg-muted/50 transition-colors"
+                      className="flex flex-col items-center justify-center p-6 transition-colors border-2 border-dashed rounded-lg cursor-pointer hover:bg-muted/50"
                       onClick={() => galleryInputRef.current?.click()}
                     >
-                      <Upload className="h-10 w-10 text-muted-foreground mb-2" />
+                      <Upload className="w-10 h-10 mb-2 text-muted-foreground" />
                       <p className="text-sm text-muted-foreground">
                         Click to upload gallery images
                       </p>
@@ -370,7 +370,7 @@ export default function Events() {
                         {galleryPreviews.map((preview, index) => (
                           <div
                             key={index}
-                            className="relative aspect-square rounded-lg overflow-hidden"
+                            className="relative overflow-hidden rounded-lg aspect-square"
                           >
                             <img
                               src={preview || "/placeholder.svg"}
@@ -382,10 +382,10 @@ export default function Events() {
                               type="button"
                               variant="destructive"
                               size="icon"
-                              className="absolute top-1 right-1 h-5 w-5 rounded-full"
+                              className="absolute w-5 h-5 rounded-full top-1 right-1"
                               onClick={() => removeGalleryPreview(index)}
                             >
-                              <X className="h-3 w-3" />
+                              <X className="w-3 h-3" />
                             </Button>
                           </div>
                         ))}
@@ -409,7 +409,7 @@ export default function Events() {
               </div>
 
               <Button type="submit" className="w-full">
-                <PlusCircle className="mr-2 h-4 w-4" />
+                <PlusCircle className="w-4 h-4 mr-2" />
                 Create Event
               </Button>
             </form>
@@ -417,7 +417,7 @@ export default function Events() {
 
           <TabsContent value="manage">
             {events.length === 0 ? (
-              <div className="text-center p-12 border rounded-lg bg-muted/50">
+              <div className="p-12 text-center border rounded-lg bg-muted/50">
                 <p className="text-muted-foreground">
                   No events have been created yet.
                 </p>
@@ -435,7 +435,7 @@ export default function Events() {
                           className="object-cover"
                         />
                       </div>
-                      <CardContent className="p-6 md:w-3/4 flex flex-col">
+                      <CardContent className="flex flex-col p-6 md:w-3/4">
                         <div className="flex items-center justify-between mb-2">
                           <div className="flex items-center gap-2">
                             <Badge>{event.category}</Badge>
@@ -449,21 +449,21 @@ export default function Events() {
                               size="icon"
                               onClick={() => handleEdit(event)}
                             >
-                              <Edit className="h-4 w-4" />
+                              <Edit className="w-4 h-4" />
                             </Button>
                             <Button
                               variant="destructive"
                               size="icon"
                               onClick={() => confirmDelete(event.id)}
                             >
-                              <Trash2 className="h-4 w-4" />
+                              <Trash2 className="w-4 h-4" />
                             </Button>
                           </div>
                         </div>
-                        <h3 className="text-xl font-bold mb-2">
+                        <h3 className="mb-2 text-xl font-bold">
                           {event.title}
                         </h3>
-                        <p className="text-muted-foreground line-clamp-3 mb-4 flex-grow">
+                        <p className="flex-grow mb-4 text-muted-foreground line-clamp-3">
                           {event.description}
                         </p>
                         <div className="flex flex-wrap gap-2">
@@ -476,14 +476,14 @@ export default function Events() {
 
                         {event.gallery.length > 0 && (
                           <div className="mt-4">
-                            <p className="text-sm font-medium mb-2">
+                            <p className="mb-2 text-sm font-medium">
                               Gallery ({event.gallery.length})
                             </p>
-                            <div className="flex gap-2 overflow-x-auto pb-2">
+                            <div className="flex gap-2 pb-2 overflow-x-auto">
                               {event.gallery.map((img, index) => (
                                 <div
                                   key={index}
-                                  className="relative w-16 h-16 flex-shrink-0"
+                                  className="relative flex-shrink-0 w-16 h-16"
                                 >
                                   <img
                                     src={img || "/placeholder.svg"}
@@ -518,7 +518,7 @@ export default function Events() {
 
           {editingEvent && (
             <form action={handleUpdate} className="space-y-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
                 <div className="space-y-2">
                   <label htmlFor="edit-title" className="text-sm font-medium">
                     Event Title
@@ -598,7 +598,7 @@ export default function Events() {
                         >
                           {tag}
                           <X
-                            className="h-3 w-3 cursor-pointer"
+                            className="w-3 h-3 cursor-pointer"
                             onClick={() => handleRemoveTag(tag)}
                           />
                         </Badge>
@@ -608,15 +608,15 @@ export default function Events() {
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
                 <div className="space-y-2">
                   <label className="text-sm font-medium">Thumbnail Image</label>
-                  <div className="border rounded-lg p-4 space-y-4">
+                  <div className="p-4 space-y-4 border rounded-lg">
                     <div
-                      className="border-2 border-dashed rounded-lg p-6 flex flex-col items-center justify-center cursor-pointer hover:bg-muted/50 transition-colors"
+                      className="flex flex-col items-center justify-center p-6 transition-colors border-2 border-dashed rounded-lg cursor-pointer hover:bg-muted/50"
                       onClick={() => editThumbnailInputRef.current?.click()}
                     >
-                      <ImagePlus className="h-10 w-10 text-muted-foreground mb-2" />
+                      <ImagePlus className="w-10 h-10 mb-2 text-muted-foreground" />
                       <p className="text-sm text-muted-foreground">
                         Click to upload new thumbnail
                       </p>
@@ -630,7 +630,7 @@ export default function Events() {
                     </div>
 
                     {thumbnailPreview && (
-                      <div className="relative aspect-video rounded-lg overflow-hidden">
+                      <div className="relative overflow-hidden rounded-lg aspect-video">
                         <img
                           src={thumbnailPreview || "/placeholder.svg"}
                           alt="Thumbnail preview"
@@ -641,10 +641,10 @@ export default function Events() {
                           type="button"
                           variant="destructive"
                           size="icon"
-                          className="absolute top-2 right-2 h-6 w-6 rounded-full"
+                          className="absolute w-6 h-6 rounded-full top-2 right-2"
                           onClick={() => setThumbnailPreview(null)}
                         >
-                          <X className="h-3 w-3" />
+                          <X className="w-3 h-3" />
                         </Button>
                       </div>
                     )}
@@ -653,12 +653,12 @@ export default function Events() {
 
                 <div className="space-y-2">
                   <label className="text-sm font-medium">Gallery Images</label>
-                  <div className="border rounded-lg p-4 space-y-4">
+                  <div className="p-4 space-y-4 border rounded-lg">
                     <div
-                      className="border-2 border-dashed rounded-lg p-6 flex flex-col items-center justify-center cursor-pointer hover:bg-muted/50 transition-colors"
+                      className="flex flex-col items-center justify-center p-6 transition-colors border-2 border-dashed rounded-lg cursor-pointer hover:bg-muted/50"
                       onClick={() => editGalleryInputRef.current?.click()}
                     >
-                      <Upload className="h-10 w-10 text-muted-foreground mb-2" />
+                      <Upload className="w-10 h-10 mb-2 text-muted-foreground" />
                       <p className="text-sm text-muted-foreground">
                         Click to upload gallery images
                       </p>
@@ -677,7 +677,7 @@ export default function Events() {
                         {galleryPreviews.map((preview, index) => (
                           <div
                             key={index}
-                            className="relative aspect-square rounded-lg overflow-hidden"
+                            className="relative overflow-hidden rounded-lg aspect-square"
                           >
                             <img
                               src={preview || "/placeholder.svg"}
@@ -689,10 +689,10 @@ export default function Events() {
                               type="button"
                               variant="destructive"
                               size="icon"
-                              className="absolute top-1 right-1 h-5 w-5 rounded-full"
+                              className="absolute w-5 h-5 rounded-full top-1 right-1"
                               onClick={() => removeGalleryPreview(index)}
                             >
-                              <X className="h-3 w-3" />
+                              <X className="w-3 h-3" />
                             </Button>
                           </div>
                         ))}
