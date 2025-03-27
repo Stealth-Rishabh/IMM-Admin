@@ -1,4 +1,4 @@
-import { AppSidebar } from "@/components/app-sidebar"
+import { AppSidebar } from "@/components/app-sidebar";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -6,15 +6,18 @@ import {
   BreadcrumbList,
   BreadcrumbPage,
   BreadcrumbSeparator,
-} from "@/components/ui/breadcrumb"
-import { Separator } from "@/components/ui/separator"
+} from "@/components/ui/breadcrumb";
+import { Separator } from "@/components/ui/separator";
 import {
   SidebarInset,
   SidebarProvider,
   SidebarTrigger,
-} from "@/components/ui/sidebar"
+} from "@/components/ui/sidebar";
+import { useBreadcrumb } from "@/contexts/BreadcrumbContext";
 
 export default function Dashboard({ children }) {
+  const { currentBreadcrumb } = useBreadcrumb();
+
   return (
     <SidebarProvider>
       <AppSidebar />
@@ -26,22 +29,18 @@ export default function Dashboard({ children }) {
             <Breadcrumb>
               <BreadcrumbList>
                 <BreadcrumbItem className="hidden md:block">
-                  <BreadcrumbLink href="#">
-                    Menu
-                  </BreadcrumbLink>
+                  <BreadcrumbLink href="#">Menu</BreadcrumbLink>
                 </BreadcrumbItem>
                 <BreadcrumbSeparator className="hidden md:block" />
                 <BreadcrumbItem>
-                  <BreadcrumbPage>Image Gallery</BreadcrumbPage>
+                  <BreadcrumbPage>{currentBreadcrumb}</BreadcrumbPage>
                 </BreadcrumbItem>
               </BreadcrumbList>
             </Breadcrumb>
           </div>
         </header>
-        <section className="p-4 pt-0">
-          {children}
-        </section>
+        <section className="p-4 pt-0">{children}</section>
       </SidebarInset>
     </SidebarProvider>
-  )
+  );
 }

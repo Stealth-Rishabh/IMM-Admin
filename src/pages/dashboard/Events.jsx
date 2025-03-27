@@ -1,0 +1,759 @@
+"use client";
+
+import { useState, useRef, useEffect } from "react";
+import {
+  PlusCircle,
+  X,
+  Calendar,
+  Tag,
+  Edit,
+  Trash2,
+  Upload,
+  ImagePlus,
+} from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Card, CardContent } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import {
+  createEvent,
+  updateEvent,
+  deleteEvent,
+} from "../../services/eventActions";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+} from "@/components/ui/dialog";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import { useBreadcrumb } from "@/contexts/BreadcrumbContext";
+
+export default function Events() {
+  const { setCurrentBreadcrumb } = useBreadcrumb();
+
+  useEffect(() => {
+    setCurrentBreadcrumb("Events");
+  }, [setCurrentBreadcrumb]);
+
+  const [events, setEvents] = useState([]);
+
+  const [newTag, setNewTag] = useState("");
+  const [tags, setTags] = useState([]);
+  const [thumbnailPreview, setThumbnailPreview] = useState(null);
+  const [galleryPreviews, setGalleryPreviews] = useState([]);
+  const [editingEvent, setEditingEvent] = useState(null);
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
+  const [eventToDelete, setEventToDelete] = useState(null);
+
+  const thumbnailInputRef = useRef(null);
+  const galleryInputRef = useRef(null);
+  const editThumbnailInputRef = useRef(null);
+  const editGalleryInputRef = useRef(null);
+
+  const handleAddTag = () => {
+    if (newTag.trim() !== "") {
+      setTags([...tags, newTag.trim()]);
+      setNewTag("");
+    }
+  };
+
+  const handleRemoveTag = (tagToRemove) => {
+    setTags(tags.filter((tag) => tag !== tagToRemove));
+  };
+
+  const handleThumbnailChange = (e) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        setThumbnailPreview(e.target?.result);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleGalleryChange = (e) => {
+    const files = e.target.files;
+    if (files) {
+      const newPreviews = [];
+      Array.from(files).forEach((file) => {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          newPreviews.push(e.target?.result);
+          if (newPreviews.length === files.length) {
+            setGalleryPreviews([...galleryPreviews, ...newPreviews]);
+          }
+        };
+        reader.readAsDataURL(file);
+      });
+    }
+  };
+
+  const removeGalleryPreview = (index) => {
+    setGalleryPreviews(galleryPreviews.filter((_, i) => i !== index));
+  };
+
+  const handleSubmit = async (formData) => {
+    const eventData = {
+      id: events.length > 0 ? Math.max(...events.map((e) => e.id)) + 1 : 1,
+      image: thumbnailPreview || "https://v0.dev/placeholder.svg",
+      date: formData.get("date"),
+      category: formData.get("category"),
+      title: formData.get("title"),
+      tags: tags,
+      description: formData.get("description"),
+      gallery: galleryPreviews,
+    };
+
+    try {
+      // Call the server action to create the event
+      await createEvent(eventData);
+
+      // Update the local state with the new event
+      setEvents([...events, eventData]);
+
+      // Reset form fields
+      setTags([]);
+      setThumbnailPreview(null);
+      setGalleryPreviews([]);
+
+      // Reset the form
+      const form = document.getElementById("event-form");
+      form.reset();
+    } catch (error) {
+      console.error("Error creating event:", error);
+    }
+  };
+
+  const handleEdit = (event) => {
+    setEditingEvent(event);
+    setTags(event.tags);
+    setThumbnailPreview(event.image);
+    setGalleryPreviews(event.gallery);
+    setIsEditDialogOpen(true);
+  };
+
+  const handleUpdate = async (formData) => {
+    if (!editingEvent) return;
+
+    const updatedEvent = {
+      id: editingEvent.id,
+      image: thumbnailPreview || editingEvent.image,
+      date: formData.get("edit-date"),
+      category: formData.get("edit-category"),
+      title: formData.get("edit-title"),
+      tags: tags,
+      description: formData.get("edit-description"),
+      gallery: galleryPreviews,
+    };
+
+    try {
+      // Call the server action to update the event
+      await updateEvent(updatedEvent);
+
+      // Update the local state
+      setEvents(
+        events.map((e) => (e.id === updatedEvent.id ? updatedEvent : e))
+      );
+
+      // Close the dialog
+      setIsEditDialogOpen(false);
+      setEditingEvent(null);
+    } catch (error) {
+      console.error("Error updating event:", error);
+    }
+  };
+
+  const confirmDelete = (id) => {
+    setEventToDelete(id);
+    setDeleteConfirmOpen(true);
+  };
+
+  const handleDelete = async () => {
+    if (eventToDelete === null) return;
+
+    try {
+      // Call the server action to delete the event
+      await deleteEvent(eventToDelete);
+
+      // Update the local state
+      setEvents(events.filter((e) => e.id !== eventToDelete));
+
+      // Close the dialog
+      setDeleteConfirmOpen(false);
+      setEventToDelete(null);
+    } catch (error) {
+      console.error("Error deleting event:", error);
+    }
+  };
+
+  return (
+    <div className=" mx-auto py- space-y-8">
+      <div className="bg-white dark:bg-gray-950 rounded-xl border shadow-sm p-6">
+        <h1 className="text-2xl font-bold mb-6">Event Management</h1>
+
+        <Tabs defaultValue="create">
+          <TabsList className="mb-6">
+            <TabsTrigger value="create">Create Event</TabsTrigger>
+            <TabsTrigger value="manage">
+              Manage Events ({events.length})
+            </TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="create" className="space-y-6">
+            <form id="event-form" action={handleSubmit} className="space-y-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="space-y-2">
+                  <label htmlFor="title" className="text-sm font-medium">
+                    Event Title
+                  </label>
+                  <Input
+                    id="title"
+                    name="title"
+                    placeholder="Enter event title"
+                    required
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <label htmlFor="date" className="text-sm font-medium">
+                    Event Date
+                  </label>
+                  <div className="relative">
+                    <Calendar className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
+                    <Input
+                      id="date"
+                      name="date"
+                      type="date"
+                      className="pl-10"
+                      required
+                    />
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <label htmlFor="category" className="text-sm font-medium">
+                    Category
+                  </label>
+                  <Input
+                    id="category"
+                    name="category"
+                    placeholder="education, workshop, etc."
+                    required
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">Tags</label>
+                  <div className="flex gap-2">
+                    <div className="relative flex-1">
+                      <Tag className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
+                      <Input
+                        value={newTag}
+                        onChange={(e) => setNewTag(e.target.value)}
+                        placeholder="Add a tag"
+                        className="pl-10"
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter") {
+                            e.preventDefault();
+                            handleAddTag();
+                          }
+                        }}
+                      />
+                    </div>
+                    <Button type="button" onClick={handleAddTag} size="sm">
+                      Add
+                    </Button>
+                  </div>
+
+                  {tags.length > 0 && (
+                    <div className="flex flex-wrap gap-2 mt-2">
+                      {tags.map((tag, index) => (
+                        <Badge
+                          key={index}
+                          variant="secondary"
+                          className="flex items-center gap-1"
+                        >
+                          {tag}
+                          <X
+                            className="h-3 w-3 cursor-pointer"
+                            onClick={() => handleRemoveTag(tag)}
+                          />
+                        </Badge>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">Thumbnail Image</label>
+                  <div className="border rounded-lg p-4 space-y-4">
+                    <div
+                      className="border-2 border-dashed rounded-lg p-6 flex flex-col items-center justify-center cursor-pointer hover:bg-muted/50 transition-colors"
+                      onClick={() => thumbnailInputRef.current?.click()}
+                    >
+                      <ImagePlus className="h-10 w-10 text-muted-foreground mb-2" />
+                      <p className="text-sm text-muted-foreground">
+                        Click to upload thumbnail
+                      </p>
+                      <input
+                        ref={thumbnailInputRef}
+                        type="file"
+                        accept="image/*"
+                        className="hidden"
+                        onChange={handleThumbnailChange}
+                      />
+                    </div>
+
+                    {thumbnailPreview && (
+                      <div className="relative aspect-video rounded-lg overflow-hidden">
+                        <img
+                          src={thumbnailPreview || "/placeholder.svg"}
+                          alt="Thumbnail preview"
+                          fill
+                          className="object-cover"
+                        />
+                        <Button
+                          type="button"
+                          variant="destructive"
+                          size="icon"
+                          className="absolute top-2 right-2 h-6 w-6 rounded-full"
+                          onClick={() => setThumbnailPreview(null)}
+                        >
+                          <X className="h-3 w-3" />
+                        </Button>
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">Gallery Images</label>
+                  <div className="border rounded-lg p-4 space-y-4">
+                    <div
+                      className="border-2 border-dashed rounded-lg p-6 flex flex-col items-center justify-center cursor-pointer hover:bg-muted/50 transition-colors"
+                      onClick={() => galleryInputRef.current?.click()}
+                    >
+                      <Upload className="h-10 w-10 text-muted-foreground mb-2" />
+                      <p className="text-sm text-muted-foreground">
+                        Click to upload gallery images
+                      </p>
+                      <input
+                        ref={galleryInputRef}
+                        type="file"
+                        accept="image/*"
+                        multiple
+                        className="hidden"
+                        onChange={handleGalleryChange}
+                      />
+                    </div>
+
+                    {galleryPreviews.length > 0 && (
+                      <div className="grid grid-cols-3 gap-2">
+                        {galleryPreviews.map((preview, index) => (
+                          <div
+                            key={index}
+                            className="relative aspect-square rounded-lg overflow-hidden"
+                          >
+                            <img
+                              src={preview || "/placeholder.svg"}
+                              alt={`Gallery image ${index + 1}`}
+                              fill
+                              className="object-cover"
+                            />
+                            <Button
+                              type="button"
+                              variant="destructive"
+                              size="icon"
+                              className="absolute top-1 right-1 h-5 w-5 rounded-full"
+                              onClick={() => removeGalleryPreview(index)}
+                            >
+                              <X className="h-3 w-3" />
+                            </Button>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <label htmlFor="description" className="text-sm font-medium">
+                  Description
+                </label>
+                <Textarea
+                  id="description"
+                  name="description"
+                  placeholder="Enter event description"
+                  rows={5}
+                  required
+                />
+              </div>
+
+              <Button type="submit" className="w-full">
+                <PlusCircle className="mr-2 h-4 w-4" />
+                Create Event
+              </Button>
+            </form>
+          </TabsContent>
+
+          <TabsContent value="manage">
+            {events.length === 0 ? (
+              <div className="text-center p-12 border rounded-lg bg-muted/50">
+                <p className="text-muted-foreground">
+                  No events have been created yet.
+                </p>
+              </div>
+            ) : (
+              <div className="space-y-6">
+                {events.map((event) => (
+                  <Card key={event.id} className="overflow-hidden">
+                    <div className="md:flex">
+                      <div className="relative h-48 md:h-auto md:w-1/4">
+                        <img
+                          src={event.image || "/placeholder.svg"}
+                          alt={event.title}
+                          fill
+                          className="object-cover"
+                        />
+                      </div>
+                      <CardContent className="p-6 md:w-3/4 flex flex-col">
+                        <div className="flex items-center justify-between mb-2">
+                          <div className="flex items-center gap-2">
+                            <Badge>{event.category}</Badge>
+                            <span className="text-sm text-muted-foreground">
+                              {event.date}
+                            </span>
+                          </div>
+                          <div className="flex gap-2">
+                            <Button
+                              variant="outline"
+                              size="icon"
+                              onClick={() => handleEdit(event)}
+                            >
+                              <Edit className="h-4 w-4" />
+                            </Button>
+                            <Button
+                              variant="destructive"
+                              size="icon"
+                              onClick={() => confirmDelete(event.id)}
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
+                          </div>
+                        </div>
+                        <h3 className="text-xl font-bold mb-2">
+                          {event.title}
+                        </h3>
+                        <p className="text-muted-foreground line-clamp-3 mb-4 flex-grow">
+                          {event.description}
+                        </p>
+                        <div className="flex flex-wrap gap-2">
+                          {event.tags.map((tag, index) => (
+                            <Badge key={index} variant="outline">
+                              {tag}
+                            </Badge>
+                          ))}
+                        </div>
+
+                        {event.gallery.length > 0 && (
+                          <div className="mt-4">
+                            <p className="text-sm font-medium mb-2">
+                              Gallery ({event.gallery.length})
+                            </p>
+                            <div className="flex gap-2 overflow-x-auto pb-2">
+                              {event.gallery.map((img, index) => (
+                                <div
+                                  key={index}
+                                  className="relative w-16 h-16 flex-shrink-0"
+                                >
+                                  <img
+                                    src={img || "/placeholder.svg"}
+                                    alt={`Gallery image ${index + 1}`}
+                                    fill
+                                    className="object-cover rounded-md"
+                                  />
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+                      </CardContent>
+                    </div>
+                  </Card>
+                ))}
+              </div>
+            )}
+          </TabsContent>
+        </Tabs>
+      </div>
+
+      {/* Edit Dialog */}
+      <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
+        <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Edit Event</DialogTitle>
+            <DialogDescription>
+              Make changes to the event details below.
+            </DialogDescription>
+          </DialogHeader>
+
+          {editingEvent && (
+            <form action={handleUpdate} className="space-y-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="space-y-2">
+                  <label htmlFor="edit-title" className="text-sm font-medium">
+                    Event Title
+                  </label>
+                  <Input
+                    id="edit-title"
+                    name="edit-title"
+                    defaultValue={editingEvent.title}
+                    required
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <label htmlFor="edit-date" className="text-sm font-medium">
+                    Event Date
+                  </label>
+                  <div className="relative">
+                    <Calendar className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
+                    <Input
+                      id="edit-date"
+                      name="edit-date"
+                      type="date"
+                      defaultValue={
+                        new Date(editingEvent.date).toISOString().split("T")[0]
+                      }
+                      className="pl-10"
+                      required
+                    />
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <label
+                    htmlFor="edit-category"
+                    className="text-sm font-medium"
+                  >
+                    Category
+                  </label>
+                  <Input
+                    id="edit-category"
+                    name="edit-category"
+                    defaultValue={editingEvent.category}
+                    required
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">Tags</label>
+                  <div className="flex gap-2">
+                    <div className="relative flex-1">
+                      <Tag className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
+                      <Input
+                        value={newTag}
+                        onChange={(e) => setNewTag(e.target.value)}
+                        placeholder="Add a tag"
+                        className="pl-10"
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter") {
+                            e.preventDefault();
+                            handleAddTag();
+                          }
+                        }}
+                      />
+                    </div>
+                    <Button type="button" onClick={handleAddTag} size="sm">
+                      Add
+                    </Button>
+                  </div>
+
+                  {tags.length > 0 && (
+                    <div className="flex flex-wrap gap-2 mt-2">
+                      {tags.map((tag, index) => (
+                        <Badge
+                          key={index}
+                          variant="secondary"
+                          className="flex items-center gap-1"
+                        >
+                          {tag}
+                          <X
+                            className="h-3 w-3 cursor-pointer"
+                            onClick={() => handleRemoveTag(tag)}
+                          />
+                        </Badge>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">Thumbnail Image</label>
+                  <div className="border rounded-lg p-4 space-y-4">
+                    <div
+                      className="border-2 border-dashed rounded-lg p-6 flex flex-col items-center justify-center cursor-pointer hover:bg-muted/50 transition-colors"
+                      onClick={() => editThumbnailInputRef.current?.click()}
+                    >
+                      <ImagePlus className="h-10 w-10 text-muted-foreground mb-2" />
+                      <p className="text-sm text-muted-foreground">
+                        Click to upload new thumbnail
+                      </p>
+                      <input
+                        ref={editThumbnailInputRef}
+                        type="file"
+                        accept="image/*"
+                        className="hidden"
+                        onChange={handleThumbnailChange}
+                      />
+                    </div>
+
+                    {thumbnailPreview && (
+                      <div className="relative aspect-video rounded-lg overflow-hidden">
+                        <img
+                          src={thumbnailPreview || "/placeholder.svg"}
+                          alt="Thumbnail preview"
+                          fill
+                          className="object-cover"
+                        />
+                        <Button
+                          type="button"
+                          variant="destructive"
+                          size="icon"
+                          className="absolute top-2 right-2 h-6 w-6 rounded-full"
+                          onClick={() => setThumbnailPreview(null)}
+                        >
+                          <X className="h-3 w-3" />
+                        </Button>
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">Gallery Images</label>
+                  <div className="border rounded-lg p-4 space-y-4">
+                    <div
+                      className="border-2 border-dashed rounded-lg p-6 flex flex-col items-center justify-center cursor-pointer hover:bg-muted/50 transition-colors"
+                      onClick={() => editGalleryInputRef.current?.click()}
+                    >
+                      <Upload className="h-10 w-10 text-muted-foreground mb-2" />
+                      <p className="text-sm text-muted-foreground">
+                        Click to upload gallery images
+                      </p>
+                      <input
+                        ref={editGalleryInputRef}
+                        type="file"
+                        accept="image/*"
+                        multiple
+                        className="hidden"
+                        onChange={handleGalleryChange}
+                      />
+                    </div>
+
+                    {galleryPreviews.length > 0 && (
+                      <div className="grid grid-cols-3 gap-2">
+                        {galleryPreviews.map((preview, index) => (
+                          <div
+                            key={index}
+                            className="relative aspect-square rounded-lg overflow-hidden"
+                          >
+                            <img
+                              src={preview || "/placeholder.svg"}
+                              alt={`Gallery image ${index + 1}`}
+                              fill
+                              className="object-cover"
+                            />
+                            <Button
+                              type="button"
+                              variant="destructive"
+                              size="icon"
+                              className="absolute top-1 right-1 h-5 w-5 rounded-full"
+                              onClick={() => removeGalleryPreview(index)}
+                            >
+                              <X className="h-3 w-3" />
+                            </Button>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <label
+                  htmlFor="edit-description"
+                  className="text-sm font-medium"
+                >
+                  Description
+                </label>
+                <Textarea
+                  id="edit-description"
+                  name="edit-description"
+                  defaultValue={editingEvent.description}
+                  rows={5}
+                  required
+                />
+              </div>
+
+              <DialogFooter>
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => setIsEditDialogOpen(false)}
+                >
+                  Cancel
+                </Button>
+                <Button type="submit">Save Changes</Button>
+              </DialogFooter>
+            </form>
+          )}
+        </DialogContent>
+      </Dialog>
+
+      {/* Delete Confirmation Dialog */}
+      <AlertDialog open={deleteConfirmOpen} onOpenChange={setDeleteConfirmOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This action cannot be undone. This will permanently delete the
+              event.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleDelete}
+              className="bg-destructive text-destructive-foreground"
+            >
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+    </div>
+  );
+}
