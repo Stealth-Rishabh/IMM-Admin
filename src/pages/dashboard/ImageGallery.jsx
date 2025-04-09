@@ -24,7 +24,7 @@ import { useBreadcrumb } from "@/contexts/BreadcrumbContext";
 import { toast } from "@/hooks/use-toast";
 
 // API URL (update this to match your local environment)
-const API_URL = "http://localhost/api/index.php";
+const API_URL = "https://stealthlearn.in/imm-admin/api/index.php";
 
 const ImageGallery = () => {
   const { setCurrentBreadcrumb } = useBreadcrumb();

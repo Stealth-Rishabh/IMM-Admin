@@ -1,7 +1,7 @@
 "use client";
 
 // Base URL for API requests
-const API_BASE_URL = "http://localhost/api"; // This is correct
+const API_BASE_URL = "https://stealthlearn.in/imm-admin/api"; // This is correct
 
 export async function createEvent(eventData) {
   try {

@@ -42,7 +42,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { useBreadcrumb } from "@/contexts/BreadcrumbContext";
 
-const Fetch_URL = "http://localhost/api/";
+const Fetch_URL = "https://stealthlearn.in/imm-admin/api/";
 export default function Events() {
   const { setCurrentBreadcrumb } = useBreadcrumb();
 
@@ -56,7 +56,7 @@ export default function Events() {
     const loadEvents = async () => {
       try {
         const response = await fetch(
-          "http://localhost/api/index2.php?resource=events"
+          "https://stealthlearn.in/imm-admin/api/index2.php?resource=events"
         );
         const data = await response.json();
         setEvents(data);

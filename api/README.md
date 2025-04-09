@@ -25,12 +25,12 @@ This is the PHP backend for the Image Gallery component. It provides a RESTful A
 
 4. **Testing the API**:
 
-   - Access the test interface at: http://localhost/api/test.html
+   - Access the test interface at: https://stealthlearn.in/imm-admin/api/test.html
    - This simple interface lets you test uploading, viewing, and deleting images
 
 5. **React Connection**:
    - Update the API_URL in the React component (ImageGallery.jsx) if your local setup is different
-   - Default URL is: `http://localhost/api/index.php`
+   - Default URL is: `https://stealthlearn.in/imm-admin/api/index.php`
 
 ## API Endpoints
 
