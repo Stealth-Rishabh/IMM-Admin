@@ -19,8 +19,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Upload, X, Edit, ImageIcon } from "lucide-react";
+import { Upload, X, Edit, ImageIcon, Loader2 } from "lucide-react";
 import { useBreadcrumb } from "@/contexts/BreadcrumbContext";
+import { toast } from "@/hooks/use-toast";
+
+// API URL (update this to match your local environment)
+const API_URL = "http://localhost/api/index.php";
 
 const ImageGallery = () => {
   const { setCurrentBreadcrumb } = useBreadcrumb();
@@ -33,10 +37,42 @@ const ImageGallery = () => {
   const [newImagePreview, setNewImagePreview] = useState(null);
   const [newImageFile, setNewImageFile] = useState(null);
   const replaceFileInputRef = useRef(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
+  const [editFormData, setEditFormData] = useState({
+    title: "",
+    category: "Uncategorized",
+  });
 
   useEffect(() => {
     setCurrentBreadcrumb("Image Gallery");
+    // Load images when component mounts
+    fetchImages();
   }, [setCurrentBreadcrumb]);
+
+  // Fetch images from the API
+  const fetchImages = async () => {
+    setIsLoading(true);
+    try {
+      const response = await fetch(API_URL);
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      setImages(data);
+    } catch (error) {
+      console.error("Error fetching images:", error);
+      toast({
+        title: "Error",
+        description: "Failed to load images. Please try again later.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   const handleFileChange = (e) => {
     const files = Array.from(e.target.files);
@@ -51,45 +87,138 @@ const ImageGallery = () => {
     setUploadDetails(details);
   };
 
-  const handleDelete = (id) => {
-    setImages(images.filter((image) => image.id !== id));
+  const handleDelete = async (id) => {
+    if (!window.confirm("Are you sure you want to delete this image?")) {
+      return;
+    }
+
+    try {
+      const response = await fetch(`${API_URL}?id=${id}`, {
+        method: "DELETE",
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+
+      await response.json();
+
+      // Update local state
+      setImages(images.filter((image) => image.id !== id));
+      toast({
+        title: "Success",
+        description: "Image deleted successfully",
+      });
+    } catch (error) {
+      console.error("Error deleting image:", error);
+      toast({
+        title: "Error",
+        description: "Failed to delete image. Please try again.",
+        variant: "destructive",
+      });
+    }
   };
 
   const openEditDialog = (image) => {
     setCurrentImage(image);
+    setEditFormData({
+      title: image.title || "",
+      category: image.category || "Uncategorized",
+    });
     setIsEditDialogOpen(true);
+    setNewImagePreview(null);
+    setNewImageFile(null);
   };
 
-  const handleUpdateImage = (e) => {
+  const handleUpdateImage = async (e) => {
     e.preventDefault();
-    const formData = new FormData(e.target);
-    const title = formData.get("title");
-    const category = formData.get("category");
+    console.log("Update function called", currentImage);
 
-    setImages(
-      images.map((image) => {
-        if (image.id === currentImage.id) {
-          // If we have a new image file, update the file and URL
-          if (newImageFile) {
-            URL.revokeObjectURL(image.url); // Clean up old URL
-            return {
-              ...image,
-              title,
-              category,
-              file: newImageFile,
-              url: URL.createObjectURL(newImageFile),
-            };
-          }
-          // Otherwise just update the metadata
-          return { ...image, title, category };
-        }
-        return image;
-      })
-    );
+    // Show loading state
+    setIsUploading(true);
 
-    setIsEditDialogOpen(false);
-    setNewImageFile(null);
-    setNewImagePreview(null);
+    try {
+      // Important: Add the ID to the URL instead of form data for more reliable handling
+      const updateUrl = `${API_URL}?id=${currentImage.id}`;
+      console.log("Using update URL:", updateUrl);
+
+      // Create FormData object explicitly (don't use the event target form)
+      const formData = new FormData();
+
+      // Add fields manually to ensure they're included
+      formData.append("title", editFormData.title);
+      formData.append("category", editFormData.category);
+      formData.append("id", currentImage.id);
+
+      console.log("Form values being sent:", {
+        title: editFormData.title,
+        category: editFormData.category,
+        id: currentImage.id,
+      });
+
+      // If we have a new image file, add it to the form data
+      if (newImageFile) {
+        formData.append("file", newImageFile);
+        console.log("Adding new image file:", newImageFile.name);
+      }
+
+      // Log all form data entries for debugging
+      for (const pair of formData.entries()) {
+        console.log(`${pair[0]}: ${pair[1]}`);
+      }
+
+      // Send the update request
+      const response = await fetch(updateUrl, {
+        method: "PUT",
+        body: formData,
+      });
+
+      // Check for non-OK response and handle appropriately
+      if (!response.ok) {
+        const errorData = await response.json();
+        console.error("API Error Response:", errorData);
+        throw new Error(
+          errorData.message || `HTTP error! Status: ${response.status}`
+        );
+      }
+
+      const updatedImage = await response.json();
+      console.log("Update response:", updatedImage);
+
+      // Update local state with the new image data
+      setImages(
+        images.map((image) =>
+          image.id === currentImage.id
+            ? {
+                ...image,
+                title: editFormData.title,
+                category: editFormData.category,
+                url: updatedImage.url || image.url,
+              }
+            : image
+        )
+      );
+
+      toast({
+        title: "Success",
+        description: "Image updated successfully",
+      });
+
+      // Explicitly close the dialog and clean up state
+      setIsEditDialogOpen(false);
+      setNewImageFile(null);
+      setNewImagePreview(null);
+    } catch (error) {
+      console.error("Error updating image:", error);
+      toast({
+        title: "Error",
+        description: `Failed to update image: ${error.message}`,
+        variant: "destructive",
+      });
+    } finally {
+      // Reset loading state
+      setIsUploading(false);
+    }
   };
 
   const triggerFileInput = () => {
@@ -112,18 +241,59 @@ const ImageGallery = () => {
     });
   };
 
-  const handleUpload = () => {
-    const newImages = selectedFiles.map((file, index) => ({
-      id: Date.now() + Math.random().toString(36).substring(2, 9),
-      file,
-      url: URL.createObjectURL(file),
-      title: uploadDetails[index]?.title || file.name.split(".")[0],
-      category: uploadDetails[index]?.category || "Uncategorized",
-    }));
+  const handleUpload = async () => {
+    if (selectedFiles.length === 0) return;
 
-    setImages((prev) => [...prev, ...newImages]);
-    setSelectedFiles([]);
-    setUploadDetails([]);
+    setIsUploading(true);
+
+    try {
+      const uploadPromises = selectedFiles.map(async (file, index) => {
+        const formData = new FormData();
+        formData.append("file", file);
+        formData.append(
+          "title",
+          uploadDetails[index]?.title || file.name.split(".")[0]
+        );
+        formData.append(
+          "category",
+          uploadDetails[index]?.category || "Uncategorized"
+        );
+
+        const response = await fetch(API_URL, {
+          method: "POST",
+          body: formData,
+        });
+
+        if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+
+        return await response.json();
+      });
+
+      const results = await Promise.all(uploadPromises);
+
+      // Refresh the image list
+      await fetchImages();
+
+      // Clear selected files
+      setSelectedFiles([]);
+      setUploadDetails([]);
+
+      toast({
+        title: "Success",
+        description: `Successfully uploaded ${results.length} image(s)`,
+      });
+    } catch (error) {
+      console.error("Error uploading images:", error);
+      toast({
+        title: "Error",
+        description: "Failed to upload one or more images. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsUploading(false);
+    }
   };
 
   const triggerReplaceFileInput = () => {
@@ -244,9 +414,21 @@ const ImageGallery = () => {
                       </div>
                     </div>
                   ))}
-                  <Button onClick={handleUpload} className="w-full">
-                    Upload {selectedFiles.length}{" "}
-                    {selectedFiles.length === 1 ? "Image" : "Images"}
+                  <Button
+                    onClick={handleUpload}
+                    className="w-full"
+                    disabled={isUploading}
+                  >
+                    {isUploading ? (
+                      <>
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        Uploading...
+                      </>
+                    ) : (
+                      `Upload ${selectedFiles.length} ${
+                        selectedFiles.length === 1 ? "Image" : "Images"
+                      }`
+                    )}
                   </Button>
                 </div>
               </div>
@@ -256,7 +438,11 @@ const ImageGallery = () => {
       </Card>
 
       {/* Gallery Grid */}
-      {images.length > 0 ? (
+      {isLoading ? (
+        <div className="flex justify-center items-center py-12">
+          <Loader2 className="w-10 h-10 animate-spin text-gray-400" />
+        </div>
+      ) : images.length > 0 ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
           {images.map((image) => (
             <Card key={image.id} className="overflow-hidden group">
@@ -345,13 +531,25 @@ const ImageGallery = () => {
                   <Input
                     id="title"
                     name="title"
-                    defaultValue={currentImage.title}
+                    value={editFormData.title}
+                    onChange={(e) =>
+                      setEditFormData({
+                        ...editFormData,
+                        title: e.target.value,
+                      })
+                    }
                     required
                   />
                 </div>
                 <div className="grid gap-2">
                   <Label htmlFor="category">Category</Label>
-                  <Select name="category" defaultValue={currentImage.category}>
+                  <Select
+                    name="category"
+                    value={editFormData.category}
+                    onValueChange={(value) =>
+                      setEditFormData({ ...editFormData, category: value })
+                    }
+                  >
                     <SelectTrigger>
                       <SelectValue placeholder="Select a category" />
                     </SelectTrigger>
@@ -373,10 +571,20 @@ const ImageGallery = () => {
                   type="button"
                   variant="outline"
                   onClick={() => setIsEditDialogOpen(false)}
+                  disabled={isUploading}
                 >
                   Cancel
                 </Button>
-                <Button type="submit">Save Changes</Button>
+                <Button type="submit" disabled={isUploading}>
+                  {isUploading ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      Saving...
+                    </>
+                  ) : (
+                    "Save Changes"
+                  )}
+                </Button>
               </DialogFooter>
             </form>
           </DialogContent>
