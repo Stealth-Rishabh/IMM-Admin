@@ -1,69 +1,55 @@
-"use server";
+"use client";
 
-// Remove TypeScript interface and type annotations
+// Base URL for API requests
+const API_BASE_URL = "http://localhost/api"; // This is correct
+
 export async function createEvent(eventData) {
-  // Simulate server processing time
-  await new Promise((resolve) => setTimeout(resolve, 500));
-
-  // Validate the event data
-  if (
-    !eventData.title ||
-    !eventData.date ||
-    !eventData.category ||
-    !eventData.description
-  ) {
-    throw new Error("Missing required fields");
+  try {
+    const response = await fetch(`${API_BASE_URL}/index2.php?resource=events`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(eventData),
+    });
+    return handleResponse(response);
+  } catch (error) {
+    throw new Error("Network error: " + error.message);
   }
-
-  // In a real application, you would save to a database here
-  console.log("Event created:", eventData);
-
-  // Return the created event
-  return {
-    success: true,
-    event: eventData,
-  };
 }
 
 export async function updateEvent(eventData) {
-  // Simulate server processing time
-  await new Promise((resolve) => setTimeout(resolve, 500));
-
-  // Validate the event data
-  if (
-    !eventData.id ||
-    !eventData.title ||
-    !eventData.date ||
-    !eventData.category ||
-    !eventData.description
-  ) {
-    throw new Error("Missing required fields");
+  try {
+    const response = await fetch(
+      `${API_BASE_URL}/index2.php?resource=events&id=${eventData.id}`,
+      {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(eventData),
+      }
+    );
+    return handleResponse(response);
+  } catch (error) {
+    throw new Error("Network error: " + error.message);
   }
-
-  // In a real application, you would update the database here
-  console.log("Event updated:", eventData);
-
-  // Return the updated event
-  return {
-    success: true,
-    event: eventData,
-  };
 }
 
 export async function deleteEvent(eventId) {
-  // Simulate server processing time
-  await new Promise((resolve) => setTimeout(resolve, 500));
-
-  // Validate the event ID
-  if (!eventId) {
-    throw new Error("Missing event ID");
+  try {
+    const response = await fetch(
+      `${API_BASE_URL}/index2.php?resource=events&id=${eventId}`,
+      {
+        method: "DELETE",
+      }
+    );
+    return handleResponse(response);
+  } catch (error) {
+    throw new Error("Network error: " + error.message);
   }
+}
 
-  // In a real application, you would delete from the database here
-  console.log("Event deleted:", eventId);
-
-  // Return success
-  return {
-    success: true,
-  };
+async function handleResponse(response) {
+  const data = await response.json();
+  if (!response.ok) {
+    throw new Error(data.error || "Request failed");
+  }
+  return data;
 }

@@ -42,6 +42,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { useBreadcrumb } from "@/contexts/BreadcrumbContext";
 
+const Fetch_URL = "http://localhost/api/";
 export default function Events() {
   const { setCurrentBreadcrumb } = useBreadcrumb();
 
@@ -50,6 +51,21 @@ export default function Events() {
   }, [setCurrentBreadcrumb]);
 
   const [events, setEvents] = useState([]);
+
+  useEffect(() => {
+    const loadEvents = async () => {
+      try {
+        const response = await fetch(
+          "http://localhost/api/index2.php?resource=events"
+        );
+        const data = await response.json();
+        setEvents(data);
+      } catch (error) {
+        console.error("Error loading events:", error);
+      }
+    };
+    loadEvents();
+  }, []);
 
   const [newTag, setNewTag] = useState("");
   const [tags, setTags] = useState([]);
@@ -122,10 +138,10 @@ export default function Events() {
 
     try {
       // Call the server action to create the event
-      await createEvent(eventData);
+      const createdEvent = await createEvent(eventData);
 
-      // Update the local state with the new event
-      setEvents([...events, eventData]);
+      // Update the local state with the returned event
+      setEvents([...events, createdEvent]);
 
       // Reset form fields
       setTags([]);
@@ -325,7 +341,14 @@ export default function Events() {
                     {thumbnailPreview && (
                       <div className="relative overflow-hidden rounded-lg aspect-video">
                         <img
-                          src={thumbnailPreview || "/placeholder.svg"}
+                          src={
+                            thumbnailPreview &&
+                            typeof thumbnailPreview === "string" &&
+                            !thumbnailPreview.includes("data:") &&
+                            !thumbnailPreview.includes("http")
+                              ? `${Fetch_URL}${thumbnailPreview}`
+                              : thumbnailPreview || "/placeholder.svg"
+                          }
                           alt="Thumbnail preview"
                           fill
                           className="object-cover"
@@ -373,7 +396,14 @@ export default function Events() {
                             className="relative overflow-hidden rounded-lg aspect-square"
                           >
                             <img
-                              src={preview || "/placeholder.svg"}
+                              src={
+                                preview &&
+                                typeof preview === "string" &&
+                                !preview.includes("data:") &&
+                                !preview.includes("http")
+                                  ? `${Fetch_URL}${preview}`
+                                  : preview || "/placeholder.svg"
+                              }
                               alt={`Gallery image ${index + 1}`}
                               fill
                               className="object-cover"
@@ -429,7 +459,11 @@ export default function Events() {
                     <div className="md:flex">
                       <div className="relative h-48 md:h-auto md:w-1/4">
                         <img
-                          src={event.image || "/placeholder.svg"}
+                          src={
+                            event.image && !event.image.includes("http")
+                              ? `${Fetch_URL}${event.image}`
+                              : event.image || "/placeholder.svg"
+                          }
                           alt={event.title}
                           fill
                           className="object-cover"
@@ -486,7 +520,11 @@ export default function Events() {
                                   className="relative flex-shrink-0 w-16 h-16"
                                 >
                                   <img
-                                    src={img || "/placeholder.svg"}
+                                    src={
+                                      img && !img.includes("http")
+                                        ? `${Fetch_URL}${img}`
+                                        : img || "/placeholder.svg"
+                                    }
                                     alt={`Gallery image ${index + 1}`}
                                     fill
                                     className="object-cover rounded-md"
@@ -632,7 +670,14 @@ export default function Events() {
                     {thumbnailPreview && (
                       <div className="relative overflow-hidden rounded-lg aspect-video">
                         <img
-                          src={thumbnailPreview || "/placeholder.svg"}
+                          src={
+                            thumbnailPreview &&
+                            typeof thumbnailPreview === "string" &&
+                            !thumbnailPreview.includes("data:") &&
+                            !thumbnailPreview.includes("http")
+                              ? `${Fetch_URL}${thumbnailPreview}`
+                              : thumbnailPreview || "/placeholder.svg"
+                          }
                           alt="Thumbnail preview"
                           fill
                           className="object-cover"
@@ -680,7 +725,14 @@ export default function Events() {
                             className="relative overflow-hidden rounded-lg aspect-square"
                           >
                             <img
-                              src={preview || "/placeholder.svg"}
+                              src={
+                                preview &&
+                                typeof preview === "string" &&
+                                !preview.includes("data:") &&
+                                !preview.includes("http")
+                                  ? `${Fetch_URL}${preview}`
+                                  : preview || "/placeholder.svg"
+                              }
                               alt={`Gallery image ${index + 1}`}
                               fill
                               className="object-cover"
