@@ -75,6 +75,7 @@ export default function Events() {
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
   const [eventToDelete, setEventToDelete] = useState(null);
+  const [isCreating, setIsCreating] = useState(false);
 
   const thumbnailInputRef = useRef(null);
   const galleryInputRef = useRef(null);
@@ -125,6 +126,8 @@ export default function Events() {
   };
 
   const handleSubmit = async (formData) => {
+    setIsCreating(true);
+
     const eventData = {
       id: events.length > 0 ? Math.max(...events.map((e) => e.id)) + 1 : 1,
       image: thumbnailPreview || "https://v0.dev/placeholder.svg",
@@ -153,6 +156,8 @@ export default function Events() {
       form.reset();
     } catch (error) {
       console.error("Error creating event:", error);
+    } finally {
+      setIsCreating(false);
     }
   };
 
@@ -438,9 +443,18 @@ export default function Events() {
                 />
               </div>
 
-              <Button type="submit" className="w-full">
-                <PlusCircle className="w-4 h-4 mr-2" />
-                Create Event
+              <Button type="submit" className="w-full" disabled={isCreating}>
+                {isCreating ? (
+                  <>
+                    <span className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent"></span>
+                    Creating...
+                  </>
+                ) : (
+                  <>
+                    <PlusCircle className="w-4 h-4 mr-2" />
+                    Create Event
+                  </>
+                )}
               </Button>
             </form>
           </TabsContent>
