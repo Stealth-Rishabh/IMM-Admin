@@ -49,12 +49,12 @@ const data = {
     },
   ],
   navMain: [
-    {
-      title: "Gallery",
-      url: "/",
-      icon: SquareTerminal,
-      isActive: true,
-    },
+    // {
+    //   title: "Gallery",
+    //   url: "/",
+    //   icon: SquareTerminal,
+    //   isActive: true,
+    // },
     {
       title: "Events",
       url: "/events",
