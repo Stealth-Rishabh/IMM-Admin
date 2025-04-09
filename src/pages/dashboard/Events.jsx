@@ -128,18 +128,18 @@ export default function Events() {
   const handleSubmit = async (formData) => {
     setIsCreating(true);
 
-    const eventData = {
-      id: events.length > 0 ? Math.max(...events.map((e) => e.id)) + 1 : 1,
-      image: thumbnailPreview || "https://v0.dev/placeholder.svg",
-      date: formData.get("date"),
-      category: formData.get("category"),
-      title: formData.get("title"),
-      tags: tags,
-      description: formData.get("description"),
-      gallery: galleryPreviews,
-    };
-
     try {
+      const eventData = {
+        id: events.length > 0 ? Math.max(...events.map((e) => e.id)) + 1 : 1,
+        image: thumbnailPreview || "https://v0.dev/placeholder.svg",
+        date: formData.get("date"),
+        category: formData.get("category"),
+        title: formData.get("title"),
+        tags: tags,
+        description: formData.get("description"),
+        gallery: galleryPreviews,
+      };
+
       // Call the server action to create the event
       const createdEvent = await createEvent(eventData);
 
@@ -237,7 +237,15 @@ export default function Events() {
           </TabsList>
 
           <TabsContent value="create" className="space-y-6">
-            <form id="event-form" action={handleSubmit} className="space-y-6">
+            <form
+              id="event-form"
+              onSubmit={async (e) => {
+                e.preventDefault();
+                const formData = new FormData(e.target);
+                await handleSubmit(formData);
+              }}
+              className="space-y-6"
+            >
               <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
                 <div className="space-y-2">
                   <label htmlFor="title" className="text-sm font-medium">
