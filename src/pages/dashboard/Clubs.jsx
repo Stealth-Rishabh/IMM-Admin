@@ -86,6 +86,7 @@ export default function Clubs() {
   const editGalleryInputRef = useRef(null);
 
   const clubCategories = [
+    "All Clubs",
     "IT Club",
     "Maestros Club",
     "Finance Club",
