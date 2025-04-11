@@ -130,97 +130,133 @@ const ImageGallery = () => {
     setNewImageFile(null);
   };
 
+  // const handleUpdateImage = async (e) => {
+  //   e.preventDefault();
+  //   console.log("Update function called", currentImage);
+
+  //   // Show loading state
+  //   setIsUploading(true);
+
+  //   try {
+  //     // Important: Add the ID to the URL instead of form data for more reliable handling
+  //     const updateUrl = `${API_URL}?id=${currentImage.id}`;
+  //     console.log("Using update URL:", updateUrl);
+
+  //     // Create FormData object explicitly (don't use the event target form)
+  //     const formData = new FormData();
+
+  //     // Add fields manually to ensure they're included
+  //     formData.append("title", editFormData.title);
+  //     formData.append("category", editFormData.category);
+  //     formData.append("id", currentImage.id);
+
+  //     console.log("Form values being sent:", {
+  //       title: editFormData.title,
+  //       category: editFormData.category,
+  //       id: currentImage.id,
+  //     });
+
+  //     // If we have a new image file, add it to the form data
+  //     if (newImageFile) {
+  //       formData.append("file", newImageFile);
+  //       console.log("Adding new image file:", newImageFile.name);
+  //     }
+
+  //     // Log all form data entries for debugging
+  //     for (const pair of formData.entries()) {
+  //       console.log(`${pair[0]}: ${pair[1]}`);
+  //     }
+
+  //     // Send the update request
+  //     const response = await fetch(updateUrl, {
+  //       method: "PUT",
+  //       body: formData,
+  //     });
+
+  //     // Check for non-OK response and handle appropriately
+  //     if (!response.ok) {
+  //       const errorData = await response.json();
+  //       console.error("API Error Response:", errorData);
+  //       throw new Error(
+  //         errorData.message || `HTTP error! Status: ${response.status}`
+  //       );
+  //     }
+
+  //     const updatedImage = await response.json();
+  //     console.log("Update response:", updatedImage);
+
+  //     // Update local state with the new image data
+  //     setImages(
+  //       images.map((image) =>
+  //         image.id === currentImage.id
+  //           ? {
+  //               ...image,
+  //               title: editFormData.title,
+  //               category: editFormData.category,
+  //               url: updatedImage.url || image.url,
+  //             }
+  //           : image
+  //       )
+  //     );
+
+  //     toast({
+  //       title: "Success",
+  //       description: "Image updated successfully",
+  //     });
+
+  //     // Explicitly close the dialog and clean up state
+  //     setIsEditDialogOpen(false);
+  //     setNewImageFile(null);
+  //     setNewImagePreview(null);
+  //   } catch (error) {
+  //     console.error("Error updating image:", error);
+  //     toast({
+  //       title: "Error",
+  //       description: `Failed to update image: ${error.message}`,
+  //       variant: "destructive",
+  //     });
+  //   } finally {
+  //     // Reset loading state
+  //     setIsUploading(false);
+  //   }
+  // };
+
   const handleUpdateImage = async (e) => {
     e.preventDefault();
-    console.log("Update function called", currentImage);
-
-    // Show loading state
     setIsUploading(true);
-
+  
     try {
-      // Important: Add the ID to the URL instead of form data for more reliable handling
-      const updateUrl = `${API_URL}?id=${currentImage.id}`;
-      console.log("Using update URL:", updateUrl);
-
-      // Create FormData object explicitly (don't use the event target form)
       const formData = new FormData();
-
-      // Add fields manually to ensure they're included
       formData.append("title", editFormData.title);
       formData.append("category", editFormData.category);
-      formData.append("id", currentImage.id);
-
-      console.log("Form values being sent:", {
-        title: editFormData.title,
-        category: editFormData.category,
-        id: currentImage.id,
-      });
-
-      // If we have a new image file, add it to the form data
+      formData.append("id", currentImage.id); // Ensure ID is included here
+  
       if (newImageFile) {
         formData.append("file", newImageFile);
-        console.log("Adding new image file:", newImageFile.name);
       }
-
-      // Log all form data entries for debugging
-      for (const pair of formData.entries()) {
-        console.log(`${pair[0]}: ${pair[1]}`);
-      }
-
-      // Send the update request
-      const response = await fetch(updateUrl, {
-        method: "PUT",
+  
+      const response = await fetch(API_URL, {
+        method: "POST",
         body: formData,
       });
-
-      // Check for non-OK response and handle appropriately
+  
       if (!response.ok) {
         const errorData = await response.json();
-        console.error("API Error Response:", errorData);
-        throw new Error(
-          errorData.message || `HTTP error! Status: ${response.status}`
-        );
+        throw new Error(errorData.error || 'Failed to update image');
       }
-
+  
       const updatedImage = await response.json();
-      console.log("Update response:", updatedImage);
-
-      // Update local state with the new image data
-      setImages(
-        images.map((image) =>
-          image.id === currentImage.id
-            ? {
-                ...image,
-                title: editFormData.title,
-                category: editFormData.category,
-                url: updatedImage.url || image.url,
-              }
-            : image
-        )
-      );
-
-      toast({
-        title: "Success",
-        description: "Image updated successfully",
-      });
-
-      // Explicitly close the dialog and clean up state
+      setImages(images.map(image => 
+        image.id === currentImage.id ? { ...image, ...updatedImage } : image
+      ));
+      toast({ title: "Success", description: "Image updated successfully" });
       setIsEditDialogOpen(false);
-      setNewImageFile(null);
-      setNewImagePreview(null);
     } catch (error) {
-      console.error("Error updating image:", error);
-      toast({
-        title: "Error",
-        description: `Failed to update image: ${error.message}`,
-        variant: "destructive",
-      });
+      toast({ title: "Error", description: error.message, variant: "destructive" });
     } finally {
-      // Reset loading state
       setIsUploading(false);
     }
   };
-
   const triggerFileInput = () => {
     fileInputRef.current.click();
   };
@@ -265,7 +301,26 @@ const ImageGallery = () => {
         });
 
         if (!response.ok) {
-          throw new Error(`HTTP error! Status: ${response.status}`);
+          const errorText = await response.text();
+          console.error("Error response:", errorText);
+
+          // Try to parse as JSON if possible
+          try {
+            const errorJson = JSON.parse(errorText);
+            throw new Error(
+              errorJson.error ||
+                errorJson.message ||
+                `HTTP error! Status: ${response.status}`
+            );
+          } catch {
+            // If not JSON, throw with the text or status
+            throw new Error(
+              `Upload failed (${response.status}): ${errorText.substring(
+                0,
+                100
+              )}...`
+            );
+          }
         }
 
         return await response.json();
@@ -288,7 +343,7 @@ const ImageGallery = () => {
       console.error("Error uploading images:", error);
       toast({
         title: "Error",
-        description: "Failed to upload one or more images. Please try again.",
+        description: `Failed to upload: ${error.message}`,
         variant: "destructive",
       });
     } finally {
