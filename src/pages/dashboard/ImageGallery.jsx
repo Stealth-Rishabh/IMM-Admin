@@ -503,7 +503,7 @@ const ImageGallery = () => {
             <Card key={image.id} className="overflow-hidden group">
               <div className="relative aspect-square">
                 <img
-                  src={image.url || "/placeholder.svg"}
+                  src={'https://stealthlearn.in/imm-admin/api/uploads/' + image.url || "/placeholder.svg"}
                   alt={image.title}
                   className="w-full h-full object-cover"
                 />
