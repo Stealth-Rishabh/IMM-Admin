@@ -60,6 +60,11 @@ const data = {
       url: "/events",
       icon: Bot,
     },
+    {
+      title: "Clubs",
+      url: "/clubs",
+      icon: Bot,
+    },
     // {
     //   title: "Documentation",
     //   url: "#",
