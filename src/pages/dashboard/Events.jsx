@@ -364,7 +364,7 @@ export default function Events() {
                           }
                           alt="Thumbnail preview"
                           fill
-                          className="object-cover"
+                          className="object-cover h-full w-full"
                         />
                         <Button
                           type="button"
@@ -419,7 +419,7 @@ export default function Events() {
                               }
                               alt={`Gallery image ${index + 1}`}
                               fill
-                              className="object-cover"
+                              className="object-cover h-full w-full"
                             />
                             <Button
                               type="button"
@@ -488,7 +488,7 @@ export default function Events() {
                           }
                           alt={event.title}
                           fill
-                          className="object-cover"
+                          className="object-cover h-full w-full"
                         />
                       </div>
                       <CardContent className="flex flex-col p-6 md:w-3/4">
@@ -531,7 +531,7 @@ export default function Events() {
                         </div>
 
                         {event.gallery.length > 0 && (
-                          <div className="mt-4">
+                          <div className="mt-4  max-w-[60vw]">
                             <p className="mb-2 text-sm font-medium">
                               Gallery ({event.gallery.length})
                             </p>
@@ -549,7 +549,7 @@ export default function Events() {
                                     }
                                     alt={`Gallery image ${index + 1}`}
                                     fill
-                                    className="object-cover rounded-md"
+                                    className="object-cover rounded-md h-full w-full"
                                   />
                                 </div>
                               ))}
@@ -702,7 +702,7 @@ export default function Events() {
                           }
                           alt="Thumbnail preview"
                           fill
-                          className="object-cover"
+                          className="object-cover h-full w-full"
                         />
                         <Button
                           type="button"
@@ -757,7 +757,7 @@ export default function Events() {
                               }
                               alt={`Gallery image ${index + 1}`}
                               fill
-                              className="object-cover"
+                              className="object-cover h-full w-full"
                             />
                             <Button
                               type="button"
