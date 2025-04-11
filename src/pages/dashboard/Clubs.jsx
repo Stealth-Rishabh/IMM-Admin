@@ -37,6 +37,13 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { useBreadcrumb } from "@/contexts/BreadcrumbContext";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 const Fetch_URL = "https://stealthlearn.in/imm-admin/api/";
 export default function Clubs() {
@@ -77,6 +84,19 @@ export default function Clubs() {
   const galleryInputRef = useRef(null);
   const editThumbnailInputRef = useRef(null);
   const editGalleryInputRef = useRef(null);
+
+  const clubCategories = [
+    "IT Club",
+    "Maestros Club",
+    "Finance Club",
+    "HR Club",
+    "Operations Club",
+    "E-Cell Club",
+    "Soft Skills Club",
+    "Global Voices Club",
+    "Research Club",
+    "Sports Club",
+  ];
 
   const handleAddTag = () => {
     if (newTag.trim() !== "") {
@@ -273,12 +293,18 @@ export default function Clubs() {
                   <label htmlFor="category" className="text-sm font-medium">
                     Category
                   </label>
-                  <Input
-                    id="category"
-                    name="category"
-                    placeholder="sports, academic, etc."
-                    
-                  />
+                  <Select name="category" defaultValue="">
+                    <SelectTrigger id="category">
+                      <SelectValue placeholder="Select a category" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {clubCategories.map((category) => (
+                        <SelectItem key={category} value={category}>
+                          {category}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </div>
 
                 <div className="space-y-2">
@@ -441,7 +467,6 @@ export default function Clubs() {
                   name="description"
                   placeholder="Enter club description"
                   rows={5}
-                  
                 />
               </div>
 
@@ -609,12 +634,21 @@ export default function Clubs() {
                   >
                     Category
                   </label>
-                  <Input
-                    id="edit-category"
+                  <Select
                     name="edit-category"
-                    defaultValue={editingClub.category}
-                    
-                  />
+                    defaultValue={editingClub.category || ""}
+                  >
+                    <SelectTrigger id="edit-category">
+                      <SelectValue placeholder="Select a category" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {clubCategories.map((category) => (
+                        <SelectItem key={category} value={category}>
+                          {category}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </div>
 
                 <div className="space-y-2">
@@ -780,7 +814,6 @@ export default function Clubs() {
                   name="edit-description"
                   defaultValue={editingClub.description}
                   rows={5}
-                  
                 />
               </div>
 
