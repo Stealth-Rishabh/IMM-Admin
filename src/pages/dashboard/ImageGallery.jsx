@@ -48,7 +48,7 @@ const ImageGallery = () => {
     setCurrentBreadcrumb("Image Gallery");
     // Load images when component mounts
     fetchImages();
-  }, [setCurrentBreadcrumb]);
+  }, [setCurrentBreadcrumb,isEditDialogOpen]);
 
   // Fetch images from the API
   const fetchImages = async () => {
@@ -503,7 +503,7 @@ const ImageGallery = () => {
             <Card key={image.id} className="overflow-hidden group">
               <div className="relative aspect-square">
                 <img
-                  src={'https://stealthlearn.in/imm-admin/api/uploads/' + image.url || "/placeholder.svg"}
+                  src={image.url || "/placeholder.svg"}
                   alt={image.title}
                   className="w-full h-full object-cover"
                 />

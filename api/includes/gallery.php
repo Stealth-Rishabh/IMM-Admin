@@ -70,7 +70,7 @@ class Gallery {
                 unlink($this->uploadDir . $filename);
             }
 
-            $allowedTypes = ['image/jpeg', 'image/png', 'image/gif'];
+            $allowedTypes = ['image/jpeg', 'image/png', 'image/gif','image/webp'];
             if (!in_array($file['type'], $allowedTypes)) {
                 throw new Exception('Invalid file type.');
             }

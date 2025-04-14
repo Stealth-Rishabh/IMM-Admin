@@ -11,7 +11,7 @@ define('DB_PASS', 'AUZCGDJCZDFI'); // Default XAMPP password is empty
 define('DB_NAME', 'imm_cms');
 
 // File upload configuration
-define('UPLOAD_DIR', __DIR__ . '/../../uploads/');  // Adjust path as needed
+define('UPLOAD_DIR', __DIR__ . '/../uploads/');  // Adjust path as needed
 define('UPLOAD_URL', 'https://stealthlearn.in/imm-admin/api/uploads/');  // Your local URL
 
 // Error reporting for development
