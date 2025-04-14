@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 import {
   Dialog,
   DialogContent,
@@ -451,7 +452,8 @@ const PlacementData = () => {
                         <Label htmlFor={`description-${index}`}>
                           Description
                         </Label>
-                        <Input
+                        <Textarea
+                          rows={3}
                           id={`description-${index}`}
                           value={uploadDetails[index]?.description || ""}
                           onChange={(e) =>
@@ -568,9 +570,7 @@ const PlacementData = () => {
                 </div>
               </div>
               <CardContent className="p-3">
-                <h3 className="font-medium text-sm truncate">
-                  {image.title}
-                </h3>
+                <h3 className="font-medium text-sm truncate">{image.title}</h3>
                 <p className="text-xs text-gray-500">{image.year}</p>
                 <p className="text-xs text-gray-500">{image.category}</p>
                 {image.description && (
@@ -639,7 +639,8 @@ const PlacementData = () => {
                     />
                   </div>
                 </div>
-                <div className="grid gap-2">
+                <div className="grid gap-3 sm:grid-cols-2">
+                  <div className="grid gap-2">
                   <Label htmlFor="title">Title</Label>
                   <Input
                     id="title"
@@ -653,7 +654,7 @@ const PlacementData = () => {
                     }
                     required
                   />
-                </div>  
+                </div>
                 <div className="grid gap-2">
                   <Label htmlFor="year">Year</Label>
                   <Input
@@ -669,6 +670,8 @@ const PlacementData = () => {
                     placeholder="Enter year"
                   />
                 </div>
+                </div>
+                
                 <div className="grid gap-2">
                   <Label htmlFor="category">Category</Label>
                   <Select
@@ -685,17 +688,22 @@ const PlacementData = () => {
                       <SelectItem value="Uncategorized">
                         Uncategorized
                       </SelectItem>
-                      <SelectItem value="On-Campus">On-Campus</SelectItem>
-                      <SelectItem value="Off-Campus">Off-Campus</SelectItem>
-                      <SelectItem value="Internship">Internship</SelectItem>
+                      <SelectItem value="Summer Placement">
+                        Summer Placement
+                      </SelectItem>
+                      <SelectItem value="Dazzling Divas">
+                        Dazzling Divas
+                      </SelectItem>
+                      <SelectItem value="Hall of Fame">Hall of Fame</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
                 <div className="grid gap-2">
                   <Label htmlFor="description">Description</Label>
-                  <Input
+                  <Textarea
                     id="description"
                     name="description"
+                    rows={2}
                     value={editFormData.description}
                     onChange={(e) =>
                       setEditFormData({
