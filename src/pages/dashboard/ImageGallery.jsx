@@ -42,13 +42,14 @@ const ImageGallery = () => {
   const [editFormData, setEditFormData] = useState({
     title: "",
     category: "Uncategorized",
+    description: "",
   });
 
   useEffect(() => {
     setCurrentBreadcrumb("Image Gallery");
     // Load images when component mounts
     fetchImages();
-  }, [setCurrentBreadcrumb,isEditDialogOpen]);
+  }, [setCurrentBreadcrumb, isEditDialogOpen]);
 
   // Fetch images from the API
   const fetchImages = async () => {
@@ -82,6 +83,7 @@ const ImageGallery = () => {
     const details = files.map((file) => ({
       title: file.name.split(".")[0],
       category: "Uncategorized",
+      description: "",
     }));
 
     setUploadDetails(details);
@@ -124,139 +126,57 @@ const ImageGallery = () => {
     setEditFormData({
       title: image.title || "",
       category: image.category || "Uncategorized",
+      description: image.description || "",
     });
     setIsEditDialogOpen(true);
     setNewImagePreview(null);
     setNewImageFile(null);
   };
 
-  // const handleUpdateImage = async (e) => {
-  //   e.preventDefault();
-  //   console.log("Update function called", currentImage);
-
-  //   // Show loading state
-  //   setIsUploading(true);
-
-  //   try {
-  //     // Important: Add the ID to the URL instead of form data for more reliable handling
-  //     const updateUrl = `${API_URL}?id=${currentImage.id}`;
-  //     console.log("Using update URL:", updateUrl);
-
-  //     // Create FormData object explicitly (don't use the event target form)
-  //     const formData = new FormData();
-
-  //     // Add fields manually to ensure they're included
-  //     formData.append("title", editFormData.title);
-  //     formData.append("category", editFormData.category);
-  //     formData.append("id", currentImage.id);
-
-  //     console.log("Form values being sent:", {
-  //       title: editFormData.title,
-  //       category: editFormData.category,
-  //       id: currentImage.id,
-  //     });
-
-  //     // If we have a new image file, add it to the form data
-  //     if (newImageFile) {
-  //       formData.append("file", newImageFile);
-  //       console.log("Adding new image file:", newImageFile.name);
-  //     }
-
-  //     // Log all form data entries for debugging
-  //     for (const pair of formData.entries()) {
-  //       console.log(`${pair[0]}: ${pair[1]}`);
-  //     }
-
-  //     // Send the update request
-  //     const response = await fetch(updateUrl, {
-  //       method: "PUT",
-  //       body: formData,
-  //     });
-
-  //     // Check for non-OK response and handle appropriately
-  //     if (!response.ok) {
-  //       const errorData = await response.json();
-  //       console.error("API Error Response:", errorData);
-  //       throw new Error(
-  //         errorData.message || `HTTP error! Status: ${response.status}`
-  //       );
-  //     }
-
-  //     const updatedImage = await response.json();
-  //     console.log("Update response:", updatedImage);
-
-  //     // Update local state with the new image data
-  //     setImages(
-  //       images.map((image) =>
-  //         image.id === currentImage.id
-  //           ? {
-  //               ...image,
-  //               title: editFormData.title,
-  //               category: editFormData.category,
-  //               url: updatedImage.url || image.url,
-  //             }
-  //           : image
-  //       )
-  //     );
-
-  //     toast({
-  //       title: "Success",
-  //       description: "Image updated successfully",
-  //     });
-
-  //     // Explicitly close the dialog and clean up state
-  //     setIsEditDialogOpen(false);
-  //     setNewImageFile(null);
-  //     setNewImagePreview(null);
-  //   } catch (error) {
-  //     console.error("Error updating image:", error);
-  //     toast({
-  //       title: "Error",
-  //       description: `Failed to update image: ${error.message}`,
-  //       variant: "destructive",
-  //     });
-  //   } finally {
-  //     // Reset loading state
-  //     setIsUploading(false);
-  //   }
-  // };
-
   const handleUpdateImage = async (e) => {
     e.preventDefault();
     setIsUploading(true);
-  
+
     try {
       const formData = new FormData();
       formData.append("title", editFormData.title);
       formData.append("category", editFormData.category);
-      formData.append("id", currentImage.id); // Ensure ID is included here
-  
+      formData.append("description", editFormData.description);
+      formData.append("id", currentImage.id);
+
       if (newImageFile) {
         formData.append("file", newImageFile);
       }
-  
+
       const response = await fetch(API_URL, {
         method: "POST",
         body: formData,
       });
-  
+
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.error || 'Failed to update image');
+        throw new Error(errorData.error || "Failed to update image");
       }
-  
+
       const updatedImage = await response.json();
-      setImages(images.map(image => 
-        image.id === currentImage.id ? { ...image, ...updatedImage } : image
-      ));
+      setImages(
+        images.map((image) =>
+          image.id === currentImage.id ? { ...image, ...updatedImage } : image
+        )
+      );
       toast({ title: "Success", description: "Image updated successfully" });
       setIsEditDialogOpen(false);
     } catch (error) {
-      toast({ title: "Error", description: error.message, variant: "destructive" });
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive",
+      });
     } finally {
       setIsUploading(false);
     }
   };
+
   const triggerFileInput = () => {
     fileInputRef.current.click();
   };
@@ -294,6 +214,7 @@ const ImageGallery = () => {
           "category",
           uploadDetails[index]?.category || "Uncategorized"
         );
+        formData.append("description", uploadDetails[index]?.description || "");
 
         const response = await fetch(API_URL, {
           method: "POST",
@@ -467,6 +388,23 @@ const ImageGallery = () => {
                           </SelectContent>
                         </Select>
                       </div>
+                      <div className="grid gap-2">
+                        <Label htmlFor={`description-${index}`}>
+                          Description
+                        </Label>
+                        <Input
+                          id={`description-${index}`}
+                          value={uploadDetails[index]?.description || ""}
+                          onChange={(e) =>
+                            updateUploadDetail(
+                              index,
+                              "description",
+                              e.target.value
+                            )
+                          }
+                          placeholder="Enter image description"
+                        />
+                      </div>
                     </div>
                   ))}
                   <Button
@@ -529,6 +467,11 @@ const ImageGallery = () => {
               <CardContent className="p-3">
                 <h3 className="font-medium text-sm truncate">{image.title}</h3>
                 <p className="text-xs text-gray-500">{image.category}</p>
+                {image.description && (
+                  <p className="text-xs text-gray-500 mt-1 truncate">
+                    {image.description}
+                  </p>
+                )}
               </CardContent>
             </Card>
           ))}
@@ -619,6 +562,21 @@ const ImageGallery = () => {
                       <SelectItem value="Architecture">Architecture</SelectItem>
                     </SelectContent>
                   </Select>
+                </div>
+                <div className="grid gap-2">
+                  <Label htmlFor="description">Description</Label>
+                  <Input
+                    id="description"
+                    name="description"
+                    value={editFormData.description}
+                    onChange={(e) =>
+                      setEditFormData({
+                        ...editFormData,
+                        description: e.target.value,
+                      })
+                    }
+                    placeholder="Enter image description"
+                  />
                 </div>
               </div>
               <DialogFooter>

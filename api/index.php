@@ -22,16 +22,18 @@ try {
                 $id = $_POST['id'];
                 $title = $_POST['title'] ?? '';
                 $category = $_POST['category'] ?? 'Uncategorized';
+                $description = $_POST['description'] ?? null;
                 $file = $_FILES['file'] ?? null;
-                $gallery->updateImage($id, $title, $category, $file);
+                $gallery->updateImage($id, $title, $category, $description, $file);
                 http_response_code(200);
                 echo json_encode(['message' => 'Image updated successfully']);
             } else {
                 $title = $_POST['title'] ?? '';
                 $category = $_POST['category'] ?? 'Uncategorized';
+                $description = $_POST['description'] ?? null;
                 $file = $_FILES['file'] ?? null;
                 if (!$file) throw new Exception('No file uploaded.');
-                $id = $gallery->uploadImage($title, $category, $file);
+                $id = $gallery->uploadImage($title, $category, $description, $file);
                 http_response_code(201);
                 echo json_encode(['id' => $id, 'message' => 'Image uploaded successfully']);
             }

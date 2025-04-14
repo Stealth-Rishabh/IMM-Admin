@@ -25,7 +25,7 @@ class Gallery {
     }
 
     public function getImages() {
-        $stmt = $this->db->query("SELECT id, title, category, file_name, created_at FROM images ORDER BY created_at DESC");
+        $stmt = $this->db->query("SELECT id, title, category, description, file_name, created_at FROM images ORDER BY created_at DESC");
         $images = [];
         while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
             $row['url'] = $this->uploadUrl . $row['file_name'];
@@ -34,7 +34,7 @@ class Gallery {
         return $images;
     }
 
-    public function uploadImage($title, $category, $file) {
+    public function uploadImage($title, $category, $description, $file) {
         if ($file['error'] !== UPLOAD_ERR_OK) {
             throw new Exception('File upload error: ' . $file['error']);
         }
@@ -52,12 +52,12 @@ class Gallery {
             throw new Exception('Failed to move uploaded file.');
         }
 
-        $stmt = $this->db->prepare("INSERT INTO images (title, category, file_name) VALUES (?, ?, ?)");
-        $stmt->execute([$title, $category, $filename]);
+        $stmt = $this->db->prepare("INSERT INTO images (title, category, description, file_name) VALUES (?, ?, ?, ?)");
+        $stmt->execute([$title, $category, $description, $filename]);
         return $this->db->lastInsertId();
     }
 
-    public function updateImage($id, $title, $category, $file = null) {
+    public function updateImage($id, $title, $category, $description, $file = null) {
         $stmt = $this->db->prepare("SELECT file_name FROM images WHERE id = ?");
         $stmt->execute([$id]);
         $current = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -84,8 +84,8 @@ class Gallery {
             }
         }
 
-        $stmt = $this->db->prepare("UPDATE images SET title = ?, category = ?, file_name = ? WHERE id = ?");
-        $stmt->execute([$title, $category, $filename, $id]);
+        $stmt = $this->db->prepare("UPDATE images SET title = ?, category = ?, description = ?, file_name = ? WHERE id = ?");
+        $stmt->execute([$title, $category, $description, $filename, $id]);
         return true;
     }
 
