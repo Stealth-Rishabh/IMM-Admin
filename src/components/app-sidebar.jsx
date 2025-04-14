@@ -56,6 +56,11 @@ const data = {
       isActive: true,
     },
     {
+      title: "Faculty",
+      url: "/faculty",
+      icon: Bot,
+    },
+    {
       title: "Events",
       url: "/events",
       icon: Bot,

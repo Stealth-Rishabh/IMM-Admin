@@ -1,6 +1,6 @@
 <?php
 require_once 'database.php';
-class Gallery {
+class Faculty {
     private $db;
     private $uploadDir;
     private $uploadUrl;
@@ -24,17 +24,17 @@ class Gallery {
         }
     }
 
-    public function getImages() {
-        $stmt = $this->db->query("SELECT id, title, category, description, file_name, created_at FROM images ORDER BY created_at DESC");
-        $images = [];
+    public function getFaculty() {
+        $stmt = $this->db->query("SELECT id, title, category, description, link, file_name, created_at FROM faculty ORDER BY created_at DESC");
+        $faculty = [];
         while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
             $row['url'] = $this->uploadUrl . $row['file_name'];
-            $images[] = $row;
+            $faculty[] = $row;
         }
-        return $images;
+        return $faculty;
     }
 
-    public function uploadImage($title, $category, $description, $file) {
+    public function uploadFaculty($title, $category, $description, $link, $file) {
         if ($file['error'] !== UPLOAD_ERR_OK) {
             throw new Exception('File upload error: ' . $file['error']);
         }
@@ -52,13 +52,13 @@ class Gallery {
             throw new Exception('Failed to move uploaded file.');
         }
 
-        $stmt = $this->db->prepare("INSERT INTO images (title, category, description, file_name) VALUES (?, ?, ?, ?)");
-        $stmt->execute([$title, $category, $description, $filename]);
+        $stmt = $this->db->prepare("INSERT INTO faculty (title, category, description, link, file_name) VALUES (?, ?, ?, ?, ?)");
+        $stmt->execute([$title, $category, $description, $link, $filename]);
         return $this->db->lastInsertId();
     }
 
-    public function updateImage($id, $title, $category, $description, $file = null) {
-        $stmt = $this->db->prepare("SELECT file_name FROM images WHERE id = ?");
+    public function updateFaculty($id, $title, $category, $description, $link, $file = null) {
+        $stmt = $this->db->prepare("SELECT file_name FROM faculty WHERE id = ?");
         $stmt->execute([$id]);
         $current = $stmt->fetch(PDO::FETCH_ASSOC);
         if (!$current) throw new Exception('Image not found.');
@@ -84,13 +84,13 @@ class Gallery {
             }
         }
 
-        $stmt = $this->db->prepare("UPDATE images SET title = ?, category = ?, description = ?, file_name = ? WHERE id = ?");
-        $stmt->execute([$title, $category, $description, $filename, $id]);
+        $stmt = $this->db->prepare("UPDATE faculty SET title = ?, category = ?, description = ?, link = ?, file_name = ? WHERE id = ?");
+        $stmt->execute([$title, $category, $description, $link, $filename, $id]);
         return true;
     }
 
-    public function deleteImage($id) {
-        $stmt = $this->db->prepare("SELECT file_name FROM images WHERE id = ?");
+    public function deleteFaculty($id) {
+        $stmt = $this->db->prepare("SELECT file_name FROM faculty WHERE id = ?");
         $stmt->execute([$id]);
         $current = $stmt->fetch(PDO::FETCH_ASSOC);
         if (!$current) throw new Exception('Image not found.');
@@ -100,7 +100,7 @@ class Gallery {
             unlink($filePath);
         }
 
-        $stmt = $this->db->prepare("DELETE FROM images WHERE id = ?");
+        $stmt = $this->db->prepare("DELETE FROM faculty WHERE id = ?");
         $stmt->execute([$id]);
         return $stmt->rowCount() > 0;
     }
