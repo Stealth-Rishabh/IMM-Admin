@@ -382,7 +382,9 @@ const FacultyGallery = () => {
                             <SelectItem value="Uncategorized">
                               Uncategorized
                             </SelectItem>
-                            <SelectItem value="Leadership">Leadership</SelectItem>
+                            <SelectItem value="Leadership">
+                              Leadership
+                            </SelectItem>
                             <SelectItem value="Advisory Board">
                               Advisory Board
                             </SelectItem>
@@ -568,11 +570,11 @@ const FacultyGallery = () => {
                       <SelectItem value="Uncategorized">
                         Uncategorized
                       </SelectItem>
-                      <SelectItem value="Nature">Nature</SelectItem>
-                      <SelectItem value="Travel">Travel</SelectItem>
-                      <SelectItem value="Food">Food</SelectItem>
-                      <SelectItem value="People">People</SelectItem>
-                      <SelectItem value="Architecture">Architecture</SelectItem>
+                      <SelectItem value="Leadership">Leadership</SelectItem>
+                      <SelectItem value="Advisory Board">
+                        Advisory Board
+                      </SelectItem>
+                      <SelectItem value="Faculty">Faculty</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
