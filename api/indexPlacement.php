@@ -21,17 +21,19 @@ try {
             if (isset($_POST['id'])) {
                 $id = $_POST['id'];
                 $title = $_POST['title'] ?? '';
+                $year = $_POST['year'] ?? '';
                 $category = $_POST['category'] ?? 'Uncategorized';
                 $description = $_POST['description'] ?? null;
                 $link = $_POST['link'] ?? null;
                 $file = $_FILES['file'] ?? null;
                 $logo_file = $_FILES['logo_file'] ?? null;
                 
-                $placement->updatePlacement($id, $title, $category, $description, $link, $file, $logo_file);
+                $placement->updatePlacement($id, $title, $year, $category, $description, $link, $file, $logo_file);
                 http_response_code(200);
                 echo json_encode(['message' => 'Placement data updated successfully']);
             } else {
                 $title = $_POST['title'] ?? '';
+                $year = $_POST['year'] ?? '';
                 $category = $_POST['category'] ?? 'Uncategorized';
                 $description = $_POST['description'] ?? null;
                 $link = $_POST['link'] ?? null;
@@ -39,7 +41,7 @@ try {
                 $logo_file = $_FILES['logo_file'] ?? null;
                 
                 if (!$file) throw new Exception('No file uploaded.');
-                $id = $placement->uploadPlacement($title, $category, $description, $link, $file, $logo_file);
+                $id = $placement->uploadPlacement($title, $year, $category, $description, $link, $file, $logo_file);
                 http_response_code(201);
                 echo json_encode(['id' => $id, 'message' => 'Placement data uploaded successfully']);
             }

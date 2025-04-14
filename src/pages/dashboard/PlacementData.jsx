@@ -44,6 +44,7 @@ const PlacementData = () => {
   const [isUploading, setIsUploading] = useState(false);
   const [editFormData, setEditFormData] = useState({
     title: "",
+    year: "",
     category: "Uncategorized",
     description: "",
     link: "",
@@ -87,6 +88,7 @@ const PlacementData = () => {
     // Initialize upload details with default values
     const details = files.map((file) => ({
       title: file.name.split(".")[0],
+      year: "",
       category: "Uncategorized",
       description: "",
       link: "",
@@ -132,6 +134,7 @@ const PlacementData = () => {
     setCurrentImage(image);
     setEditFormData({
       title: image.title || "",
+      year: image.year || "",
       category: image.category || "Uncategorized",
       description: image.description || "",
       link: image.link || "",
@@ -151,6 +154,7 @@ const PlacementData = () => {
     try {
       const formData = new FormData();
       formData.append("title", editFormData.title);
+      formData.append("year", editFormData.year);
       formData.append("category", editFormData.category);
       formData.append("description", editFormData.description);
       formData.append("link", editFormData.link);
@@ -246,6 +250,7 @@ const PlacementData = () => {
           "title",
           uploadDetails[index]?.title || file.name.split(".")[0]
         );
+        formData.append("year", uploadDetails[index]?.year || "");
         formData.append(
           "category",
           uploadDetails[index]?.category || "Uncategorized"
@@ -403,6 +408,17 @@ const PlacementData = () => {
                         />
                       </div>
                       <div className="grid gap-2">
+                        <Label htmlFor={`year-${index}`}>Year</Label>
+                        <Input
+                          id={`year-${index}`}
+                          value={uploadDetails[index]?.year || ""}
+                          onChange={(e) =>
+                            updateUploadDetail(index, "year", e.target.value)
+                          }
+                          placeholder="Enter year"
+                        />
+                      </div>
+                      <div className="grid gap-2">
                         <Label htmlFor={`category-${index}`}>Category</Label>
                         <Select
                           value={
@@ -552,7 +568,10 @@ const PlacementData = () => {
                 </div>
               </div>
               <CardContent className="p-3">
-                <h3 className="font-medium text-sm truncate">{image.title}</h3>
+                <h3 className="font-medium text-sm truncate">
+                  {image.title}
+                </h3>
+                <p className="text-xs text-gray-500">{image.year}</p>
                 <p className="text-xs text-gray-500">{image.category}</p>
                 {image.description && (
                   <p className="text-xs text-gray-500 mt-1 truncate">
@@ -633,6 +652,21 @@ const PlacementData = () => {
                       })
                     }
                     required
+                  />
+                </div>  
+                <div className="grid gap-2">
+                  <Label htmlFor="year">Year</Label>
+                  <Input
+                    id="year"
+                    name="year"
+                    value={editFormData.year}
+                    onChange={(e) =>
+                      setEditFormData({
+                        ...editFormData,
+                        year: e.target.value,
+                      })
+                    }
+                    placeholder="Enter year"
                   />
                 </div>
                 <div className="grid gap-2">

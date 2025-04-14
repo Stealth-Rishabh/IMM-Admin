@@ -25,7 +25,7 @@ class Placement {
     }
 
     public function getPlacements() {
-        $stmt = $this->db->query("SELECT id, title, category, description, link, logo_file, file_name, created_at FROM placement ORDER BY created_at DESC");
+        $stmt = $this->db->query("SELECT id, title, year, category, description, link, logo_file, file_name, created_at FROM placement ORDER BY created_at DESC");
         $placements = [];
         while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
             $row['url'] = $this->uploadUrl . $row['file_name'];
@@ -37,7 +37,7 @@ class Placement {
         return $placements;
     }
 
-    public function uploadPlacement($title, $category, $description, $link, $file, $logo_file = null) {
+    public function uploadPlacement($title, $year, $category, $description, $link, $file, $logo_file = null) {
         if ($file['error'] !== UPLOAD_ERR_OK) {
             throw new Exception('File upload error: ' . $file['error']);
         }
@@ -72,12 +72,12 @@ class Placement {
             }
         }
 
-        $stmt = $this->db->prepare("INSERT INTO placement (title, category, description, link, logo_file, file_name) VALUES (?, ?, ?, ?, ?, ?)");
-        $stmt->execute([$title, $category, $description, $link, $logo_filename, $filename]);
+        $stmt = $this->db->prepare("INSERT INTO placement (title, year, category, description, link, logo_file, file_name) VALUES (?, ?, ?, ?, ?, ?, ?)");
+        $stmt->execute([$title, $year, $category, $description, $link, $logo_filename, $filename]);
         return $this->db->lastInsertId();
     }
 
-    public function updatePlacement($id, $title, $category, $description, $link, $file = null, $logo_file = null) {
+    public function updatePlacement($id, $title, $year, $category, $description, $link, $file = null, $logo_file = null) {
         $stmt = $this->db->prepare("SELECT file_name, logo_file FROM placement WHERE id = ?");
         $stmt->execute([$id]);
         $current = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -126,8 +126,8 @@ class Placement {
             }
         }
 
-        $stmt = $this->db->prepare("UPDATE placement SET title = ?, category = ?, description = ?, link = ?, logo_file = ?, file_name = ? WHERE id = ?");
-        $stmt->execute([$title, $category, $description, $link, $logo_filename, $filename, $id]);
+        $stmt = $this->db->prepare("UPDATE placement SET title = ?, year = ?, category = ?, description = ?, link = ?, logo_file = ?, file_name = ? WHERE id = ?");
+        $stmt->execute([$title, $year, $category, $description, $link, $logo_filename, $filename, $id]);
         return true;
     }
 
