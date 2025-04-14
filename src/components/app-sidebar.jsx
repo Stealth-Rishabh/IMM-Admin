@@ -70,6 +70,11 @@ const data = {
       url: "/clubs",
       icon: Bot,
     },
+    {
+      title: "Placements",
+      url: "/placements",
+      icon: Bot,
+    },
     // {
     //   title: "Documentation",
     //   url: "#",
