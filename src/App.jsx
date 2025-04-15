@@ -6,6 +6,7 @@ import Clubs from "./pages/dashboard/Clubs";
 import { BreadcrumbProvider } from "./contexts/BreadcrumbContext";
 import FacultyGallery from "./pages/dashboard/FacultyGallery";
 import PlacementGallery from "./pages/dashboard/PlacementData";
+import Research from "./pages/dashboard/Research";
 function App() {
   return (
     <BreadcrumbProvider>
@@ -13,6 +14,7 @@ function App() {
         <Dashboard>
           <Routes>
             <Route path="/" element={<ImageGallery />} />
+            <Route path="/research" element={<Research />} />
             <Route path="/events" element={<Events />} />
             <Route path="/clubs" element={<Clubs />} />
             <Route path="/faculty" element={<FacultyGallery />} />

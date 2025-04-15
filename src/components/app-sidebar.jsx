@@ -10,6 +10,12 @@ import {
   PieChart,
   Settings2,
   SquareTerminal,
+  Image,
+  Users,
+  Calendar,
+  UserSquare2,
+  GraduationCap,
+  School
 } from "lucide-react";
 
 import { NavMain } from "@/components/nav-main";
@@ -52,28 +58,33 @@ const data = {
     {
       title: "Gallery",
       url: "/",
-      icon: SquareTerminal,
+      icon: Image,
       isActive: true,
+    },
+    {
+      title: "Research",
+      url: "/research",
+      icon: School,
     },
     {
       title: "Faculty",
       url: "/faculty",
-      icon: Bot,
+      icon: UserSquare2,
     },
     {
       title: "Events",
       url: "/events",
-      icon: Bot,
+      icon: Calendar,
     },
     {
       title: "Clubs",
       url: "/clubs",
-      icon: Bot,
+      icon: Users,
     },
     {
       title: "Placements",
       url: "/placements",
-      icon: Bot,
+      icon: GraduationCap,
     },
     // {
     //   title: "Documentation",

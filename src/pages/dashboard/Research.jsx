@@ -26,7 +26,7 @@ import { toast } from "@/hooks/use-toast";
 // API URL (update this to match your local environment)
 const API_URL = "https://stealthlearn.in/imm-admin/api/index.php";
 
-const ImageGallery = () => {
+const Research = () => {
   const { setCurrentBreadcrumb } = useBreadcrumb();
   const [images, setImages] = useState([]);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
@@ -53,7 +53,7 @@ const ImageGallery = () => {
   });
 
   useEffect(() => {
-    setCurrentBreadcrumb("Image Gallery");
+    setCurrentBreadcrumb("Research");
     // Load images when component mounts
     fetchImages();
   }, [setCurrentBreadcrumb, isEditDialogOpen]);
@@ -324,17 +324,12 @@ const ImageGallery = () => {
       return false;
     }
 
-    // Keep the existing filter to exclude International and National categories
-    if (image.category === "International" || image.category === "National") {
-      return false;
-    }
-
     return true;
   };
 
   return (
     <div className="border border-gray-200 rounded-lg mx-auto p-6 ">
-      <h1 className="text-2xl font-bold mb-6">Image Gallery</h1>
+      <h1 className="text-2xl font-bold mb-6">Research Conference</h1>
 
       {/* Upload Section */}
       <Card className="mb-8">
@@ -426,12 +421,11 @@ const ImageGallery = () => {
                             <SelectItem value="Uncategorized">
                               Uncategorized
                             </SelectItem>
-                            <SelectItem value="Nature">Nature</SelectItem>
-                            <SelectItem value="Travel">Travel</SelectItem>
-                            <SelectItem value="Food">Food</SelectItem>
-                            <SelectItem value="People">People</SelectItem>
-                            <SelectItem value="Architecture">
-                              Architecture
+                            <SelectItem value="International">
+                              International Conference
+                            </SelectItem>
+                            <SelectItem value="National">
+                              National Conference
                             </SelectItem>
                           </SelectContent>
                         </Select>
@@ -528,11 +522,12 @@ const ImageGallery = () => {
                       <SelectItem value="Uncategorized">
                         Uncategorized
                       </SelectItem>
-                      <SelectItem value="Nature">Nature</SelectItem>
-                      <SelectItem value="Travel">Travel</SelectItem>
-                      <SelectItem value="Food">Food</SelectItem>
-                      <SelectItem value="People">People</SelectItem>
-                      <SelectItem value="Architecture">Architecture</SelectItem>
+                      <SelectItem value="International">
+                        International Conference
+                      </SelectItem>
+                      <SelectItem value="National">
+                        National Conference
+                      </SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -714,4 +709,4 @@ const ImageGallery = () => {
   );
 };
 
-export default ImageGallery;
+export default Research;
