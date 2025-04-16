@@ -29,6 +29,8 @@ const API_URL = "https://stealthlearn.in/imm-admin/api/indexFaculty.php";
 const FacultyGallery = () => {
   const { setCurrentBreadcrumb } = useBreadcrumb();
   const [images, setImages] = useState([]);
+  const [filteredImages, setFilteredImages] = useState([]);
+  const [activeFilter, setActiveFilter] = useState("All");
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [currentImage, setCurrentImage] = useState(null);
   const fileInputRef = useRef(null);
@@ -45,12 +47,28 @@ const FacultyGallery = () => {
     description: "",
     link: "",
   });
+  const [filters, setFilters] = useState({
+    title: "",
+    description: "",
+    category: "all",
+  });
 
   useEffect(() => {
     setCurrentBreadcrumb("Faculty Images");
     // Load images when component mounts
     fetchImages();
   }, [setCurrentBreadcrumb, isEditDialogOpen]);
+
+  // Apply filter when images or activeFilter changes
+  useEffect(() => {
+    if (activeFilter === "All") {
+      setFilteredImages(images);
+    } else {
+      setFilteredImages(
+        images.filter((image) => image.category === activeFilter)
+      );
+    }
+  }, [images, activeFilter]);
 
   // Fetch images from the API
   const fetchImages = async () => {
@@ -81,12 +99,20 @@ const FacultyGallery = () => {
     setSelectedFiles(files);
 
     // Initialize upload details with default values
-    const details = files.map((file) => ({
-      title: file.name.split(".")[0],
-      category: "Uncategorized",
-      description: "",
-      link: "",
-    }));
+    const details = files.map((file) => {
+      let title = file.name;
+      // Remove _11zon patterns with regex
+      title = title.replace(/_\d*_?11zon/g, "");
+      // Get everything before the last period
+      title = title.substring(0, title.lastIndexOf(".")) || title;
+
+      return {
+        title,
+        category: "Uncategorized",
+        description: "",
+        link: "",
+      };
+    });
 
     setUploadDetails(details);
   };
@@ -212,7 +238,13 @@ const FacultyGallery = () => {
         formData.append("file", file);
         formData.append(
           "title",
-          uploadDetails[index]?.title || file.name.split(".")[0]
+          uploadDetails[index]?.title ||
+            file.name
+              .replace(/_\d*_?11zon/g, "")
+              .substring(
+                0,
+                file.name.replace(/_\d*_?11zon/g, "").lastIndexOf(".")
+              )
         );
         formData.append(
           "category",
@@ -288,6 +320,40 @@ const FacultyGallery = () => {
     }
   };
 
+  const handleFilterChange = (field, value) => {
+    setFilters((prev) => ({
+      ...prev,
+      [field]: value,
+    }));
+  };
+
+  const filterImages = (image) => {
+    // Title filter
+    if (
+      filters.title &&
+      !image.title?.toLowerCase().includes(filters.title.toLowerCase())
+    ) {
+      return false;
+    }
+
+    // Description filter
+    if (
+      filters.description &&
+      !image.description
+        ?.toLowerCase()
+        .includes(filters.description.toLowerCase())
+    ) {
+      return false;
+    }
+
+    // Category filter
+    if (filters.category !== "all" && image.category !== filters.category) {
+      return false;
+    }
+
+    return true;
+  };
+
   return (
     <div className="border border-gray-200 rounded-lg mx-auto p-6 ">
       <h1 className="text-2xl font-bold mb-6">Faculty Gallery</h1>
@@ -357,7 +423,14 @@ const FacultyGallery = () => {
                           id={`title-${index}`}
                           value={
                             uploadDetails[index]?.title ||
-                            file.name.split(".")[0]
+                            file.name
+                              .replace(/_\d*_?11zon/g, "")
+                              .substring(
+                                0,
+                                file.name
+                                  .replace(/_\d*_?11zon/g, "")
+                                  .lastIndexOf(".")
+                              )
                           }
                           onChange={(e) =>
                             updateUploadDetail(index, "title", e.target.value)
@@ -445,14 +518,106 @@ const FacultyGallery = () => {
         </CardContent>
       </Card>
 
-      {/* Gallery Grid */}
+      {/* Filter Section */}
+      {/* {!isLoading && images.length > 0 && (
+        <div className="mb-6">
+          <div className="flex flex-wrap gap-2">
+            <Button
+              variant={activeFilter === "All" ? "default" : "outline"}
+              size="sm"
+              onClick={() => setActiveFilter("All")}
+            >
+              All
+            </Button>
+            <Button
+              variant={activeFilter === "Leadership" ? "default" : "outline"}
+              size="sm"
+              onClick={() => setActiveFilter("Leadership")}
+            >
+              Leadership
+            </Button>
+            <Button
+              variant={
+                activeFilter === "Advisory Board" ? "default" : "outline"
+              }
+              size="sm"
+              onClick={() => setActiveFilter("Advisory Board")}
+            >
+              Advisory Board
+            </Button>
+            <Button
+              variant={activeFilter === "Faculty" ? "default" : "outline"}
+              size="sm"
+              onClick={() => setActiveFilter("Faculty")}
+            >
+              Faculty
+            </Button>
+            <Button
+              variant={activeFilter === "Uncategorized" ? "default" : "outline"}
+              size="sm"
+              onClick={() => setActiveFilter("Uncategorized")}
+            >
+              Uncategorized
+            </Button>
+          </div>
+        </div>
+      )} */}
+
+      {/* Filter Controls */}
+      <Card className="mb-6">
+        <CardContent className="pt-6">
+          <h3 className="font-medium mb-4">Filter Faculty</h3>
+          <div className="grid gap-4 md:grid-cols-3">
+            <div className="grid gap-2">
+              <Label htmlFor="title-filter">Title</Label>
+              <Input
+                id="title-filter"
+                placeholder="Filter by title"
+                value={filters.title}
+                onChange={(e) => handleFilterChange("title", e.target.value)}
+              />
+            </div>
+            <div className="grid gap-2">
+              <Label htmlFor="description-filter">Description</Label>
+              <Input
+                id="description-filter"
+                placeholder="Filter by description"
+                value={filters.description}
+                onChange={(e) =>
+                  handleFilterChange("description", e.target.value)
+                }
+              />
+            </div>
+            <div className="grid gap-2">
+              <Label htmlFor="category-filter">Category</Label>
+              <Select
+                value={filters.category}
+                onValueChange={(value) => handleFilterChange("category", value)}
+              >
+                <SelectTrigger id="category-filter">
+                  <SelectValue placeholder="Select category" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Categories</SelectItem>
+                  <SelectItem value="Uncategorized">Uncategorized</SelectItem>
+                  <SelectItem value="Leadership">Leadership</SelectItem>
+                  <SelectItem value="Advisory Board">Advisory Board</SelectItem>
+                  <SelectItem value="Faculty">Faculty</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Gallery Grid - updated to use filteredImages */}
       {isLoading ? (
         <div className="flex justify-center items-center py-12">
           <Loader2 className="w-10 h-10 animate-spin text-gray-400" />
         </div>
-      ) : images.length > 0 ? (
+      ) : filteredImages.length > 0 ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-          {images.map((image) => (
+          {filteredImages.filter(filterImages).map((image) => (
             <Card key={image.id} className="overflow-hidden group">
               <div className="relative aspect-square">
                 <img
@@ -490,6 +655,12 @@ const FacultyGallery = () => {
               </CardContent>
             </Card>
           ))}
+        </div>
+      ) : images.length > 0 ? (
+        <div className="text-center py-8">
+          <p className="text-gray-500">
+            No images found matching the selected filter.
+          </p>
         </div>
       ) : (
         <div className="text-center py-12">
