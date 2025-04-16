@@ -332,9 +332,27 @@ const ImageGallery = () => {
     return true;
   };
 
+  const clearFilters = () => {
+    setFilters({
+      title: "",
+      description: "",
+      category: "all",
+    });
+  };
+
   return (
     <div className="border border-gray-200 rounded-lg mx-auto p-6 ">
-      <h1 className="text-2xl font-bold mb-6">Image Gallery</h1>
+      <div className="flex justify-between items-center mb-6">
+        <h1 className="text-2xl font-bold">Image Gallery</h1>
+        <div className="text-sm text-gray-500">
+          {!isLoading && (
+            <>
+              Showing {images.filter(filterImages).length} of {images.length}{" "}
+              images
+            </>
+          )}
+        </div>
+      </div>
 
       {/* Upload Section */}
       <Card className="mb-8">
@@ -540,48 +558,63 @@ const ImageGallery = () => {
             </CardContent>
           </Card>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-            {images.filter(filterImages).map((image) => (
-              <Card key={image.id} className="overflow-hidden group">
-                <div className="relative aspect-square">
-                  <img
-                    src={image.url || "/placeholder.svg"}
-                    alt={image.title}
-                    className="w-full h-full object-cover"
-                  />
-                  <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-40 transition-all flex items-center justify-center opacity-0 group-hover:opacity-100">
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="rounded-full bg-white text-gray-700 mr-2 hover:bg-gray-200"
-                      onClick={() => openEditDialog(image)}
-                    >
-                      <Edit className="h-4 w-4" />
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="rounded-full bg-white text-gray-700 hover:bg-gray-200"
-                      onClick={() => handleDelete(image.id)}
-                    >
-                      <X className="h-4 w-4" />
-                    </Button>
+          {images.filter(filterImages).length > 0 ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+              {images.filter(filterImages).map((image) => (
+                <Card key={image.id} className="overflow-hidden group">
+                  <div className="relative aspect-square">
+                    <img
+                      src={image.url || "/placeholder.svg"}
+                      alt={image.title}
+                      className="w-full h-full object-cover"
+                    />
+                    <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-40 transition-all flex items-center justify-center opacity-0 group-hover:opacity-100">
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="rounded-full bg-white text-gray-700 mr-2 hover:bg-gray-200"
+                        onClick={() => openEditDialog(image)}
+                      >
+                        <Edit className="h-4 w-4" />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="rounded-full bg-white text-gray-700 hover:bg-gray-200"
+                        onClick={() => handleDelete(image.id)}
+                      >
+                        <X className="h-4 w-4" />
+                      </Button>
+                    </div>
                   </div>
-                </div>
-                <CardContent className="p-3">
-                  <h3 className="font-medium text-sm truncate">
-                    {image.title}
-                  </h3>
-                  <p className="text-xs text-gray-500">{image.category}</p>
-                  {image.description && (
-                    <p className="text-xs text-gray-500 mt-1 truncate">
-                      {image.description}
-                    </p>
-                  )}
-                </CardContent>
-              </Card>
-            ))}
-          </div>
+                  <CardContent className="p-3">
+                    <h3 className="font-medium text-sm truncate">
+                      {image.title}
+                    </h3>
+                    <p className="text-xs text-gray-500">{image.category}</p>
+                    {image.description && (
+                      <p className="text-xs text-gray-500 mt-1 truncate">
+                        {image.description}
+                      </p>
+                    )}
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          ) : (
+            <div className="text-center py-12">
+              <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gray-100 mb-4">
+                <ImageIcon className="h-8 w-8 text-gray-400" />
+              </div>
+              <h3 className="text-lg font-medium text-gray-900 mb-1">
+                No images found matching the selected filters
+              </h3>
+              <p className="text-gray-500 mb-4">
+                Try adjusting your search criteria
+              </p>
+              <Button onClick={clearFilters}>Clear All Filters</Button>
+            </div>
+          )}
         </>
       ) : (
         <div className="text-center py-12">

@@ -51,12 +51,31 @@ const PlacementData = () => {
     link: "",
     logo: "",
   });
+  const [filteredImages, setFilteredImages] = useState([]);
+  const [activeFilter, setActiveFilter] = useState("All");
+  const [filters, setFilters] = useState({
+    title: "",
+    description: "",
+    year: "",
+    category: "all",
+  });
 
   useEffect(() => {
     setCurrentBreadcrumb("Placement Data");
     // Load images when component mounts
     fetchImages();
   }, [setCurrentBreadcrumb, isEditDialogOpen]);
+
+  useEffect(() => {
+    // Filter and set the filtered images based on activeFilter
+    if (activeFilter === "All") {
+      setFilteredImages(images);
+    } else {
+      setFilteredImages(
+        images.filter((image) => image.category === activeFilter)
+      );
+    }
+  }, [images, activeFilter]);
 
   // Fetch images from the API
   const fetchImages = async () => {
@@ -331,9 +350,68 @@ const PlacementData = () => {
     }
   };
 
+  const handleFilterChange = (field, value) => {
+    setFilters((prev) => ({
+      ...prev,
+      [field]: value,
+    }));
+  };
+
+  const filterImages = (image) => {
+    // Title filter
+    if (
+      filters.title &&
+      !image.title?.toLowerCase().includes(filters.title.toLowerCase())
+    ) {
+      return false;
+    }
+
+    // Description filter
+    if (
+      filters.description &&
+      !image.description
+        ?.toLowerCase()
+        .includes(filters.description.toLowerCase())
+    ) {
+      return false;
+    }
+
+    // Year filter
+    if (filters.year && !image.year?.includes(filters.year)) {
+      return false;
+    }
+
+    // Category filter
+    if (filters.category !== "all" && image.category !== filters.category) {
+      return false;
+    }
+
+    return true;
+  };
+
+  const clearFilters = () => {
+    setFilters({
+      title: "",
+      description: "",
+      year: "",
+      category: "all",
+    });
+    setActiveFilter("All");
+  };
+
   return (
     <div className="border border-gray-200 rounded-lg mx-auto p-6 ">
-      <h1 className="text-2xl font-bold mb-6">Placement Data</h1>
+      <div className="flex justify-between items-center mb-4">
+        <h1 className="text-2xl font-bold">Placement Data</h1>
+        <div className="text-sm text-gray-500">
+          {!isLoading && (
+            <>
+              Showing {filteredImages.filter(filterImages).length} of{" "}
+              {images.length} items
+            </>
+          )}
+        </div>
+      </div>
 
       {/* Upload Section */}
       <Card className="mb-8">
@@ -535,6 +613,111 @@ const PlacementData = () => {
         </CardContent>
       </Card>
 
+      {/* Filter Section */}
+      {!isLoading && images.length > 0 && (
+        <div className="mb-6">
+          <div className="flex flex-wrap gap-2">
+            <Button
+              variant={activeFilter === "All" ? "default" : "outline"}
+              size="sm"
+              onClick={() => setActiveFilter("All")}
+            >
+              All
+            </Button>
+            <Button
+              variant={
+                activeFilter === "Summer Placement" ? "default" : "outline"
+              }
+              size="sm"
+              onClick={() => setActiveFilter("Summer Placement")}
+            >
+              Summer Placement
+            </Button>
+            <Button
+              variant={
+                activeFilter === "Dazzling Divas" ? "default" : "outline"
+              }
+              size="sm"
+              onClick={() => setActiveFilter("Dazzling Divas")}
+            >
+              Dazzling Divas
+            </Button>
+            <Button
+              variant={activeFilter === "Hall of Fame" ? "default" : "outline"}
+              size="sm"
+              onClick={() => setActiveFilter("Hall of Fame")}
+            >
+              Hall of Fame
+            </Button>
+            <Button
+              variant={activeFilter === "Uncategorized" ? "default" : "outline"}
+              size="sm"
+              onClick={() => setActiveFilter("Uncategorized")}
+            >
+              Uncategorized
+            </Button>
+          </div>
+        </div>
+      )}
+
+      {/* Filter Controls */}
+      <Card className="mb-6">
+        <CardContent className="pt-6">
+          <h3 className="font-medium mb-4">Filter Placement Data</h3>
+          <div className="grid gap-4 md:grid-cols-4">
+            <div className="grid gap-2">
+              <Label htmlFor="title-filter">Title</Label>
+              <Input
+                id="title-filter"
+                placeholder="Filter by title"
+                value={filters.title}
+                onChange={(e) => handleFilterChange("title", e.target.value)}
+              />
+            </div>
+            <div className="grid gap-2">
+              <Label htmlFor="year-filter">Year</Label>
+              <Input
+                id="year-filter"
+                placeholder="Filter by year"
+                value={filters.year}
+                onChange={(e) => handleFilterChange("year", e.target.value)}
+              />
+            </div>
+            <div className="grid gap-2">
+              <Label htmlFor="description-filter">Description</Label>
+              <Input
+                id="description-filter"
+                placeholder="Filter by description"
+                value={filters.description}
+                onChange={(e) =>
+                  handleFilterChange("description", e.target.value)
+                }
+              />
+            </div>
+            <div className="grid gap-2">
+              <Label htmlFor="category-filter">Category</Label>
+              <Select
+                value={filters.category}
+                onValueChange={(value) => handleFilterChange("category", value)}
+              >
+                <SelectTrigger id="category-filter">
+                  <SelectValue placeholder="Select category" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Categories</SelectItem>
+                  <SelectItem value="Uncategorized">Uncategorized</SelectItem>
+                  <SelectItem value="Summer Placement">
+                    Summer Placement
+                  </SelectItem>
+                  <SelectItem value="Dazzling Divas">Dazzling Divas</SelectItem>
+                  <SelectItem value="Hall of Fame">Hall of Fame</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
       {/* Gallery Grid */}
       {isLoading ? (
         <div className="flex justify-center items-center py-12">
@@ -542,7 +725,7 @@ const PlacementData = () => {
         </div>
       ) : images.length > 0 ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-          {images.map((image) => (
+          {filteredImages.filter(filterImages).map((image) => (
             <Card key={image.id} className="overflow-hidden group">
               <div className="relative aspect-square">
                 <img
@@ -597,10 +780,12 @@ const PlacementData = () => {
             <ImageIcon className="h-8 w-8 text-gray-400" />
           </div>
           <h3 className="text-lg font-medium text-gray-900 mb-1">
-            No placement data yet
+            No placement data found matching the selected filters
           </h3>
-          <p className="text-gray-500 mb-4">Upload data to see them here</p>
-          <Button onClick={triggerFileInput}>Upload Data</Button>
+          <p className="text-gray-500 mb-4">
+            Try adjusting your search criteria
+          </p>
+          <Button onClick={clearFilters}>Clear All Filters</Button>
         </div>
       )}
 
@@ -641,37 +826,37 @@ const PlacementData = () => {
                 </div>
                 <div className="grid gap-3 sm:grid-cols-2">
                   <div className="grid gap-2">
-                  <Label htmlFor="title">Title</Label>
-                  <Input
-                    id="title"
-                    name="title"
-                    value={editFormData.title}
-                    onChange={(e) =>
-                      setEditFormData({
-                        ...editFormData,
-                        title: e.target.value,
-                      })
-                    }
-                    required
-                  />
+                    <Label htmlFor="title">Title</Label>
+                    <Input
+                      id="title"
+                      name="title"
+                      value={editFormData.title}
+                      onChange={(e) =>
+                        setEditFormData({
+                          ...editFormData,
+                          title: e.target.value,
+                        })
+                      }
+                      required
+                    />
+                  </div>
+                  <div className="grid gap-2">
+                    <Label htmlFor="year">Year</Label>
+                    <Input
+                      id="year"
+                      name="year"
+                      value={editFormData.year}
+                      onChange={(e) =>
+                        setEditFormData({
+                          ...editFormData,
+                          year: e.target.value,
+                        })
+                      }
+                      placeholder="Enter year"
+                    />
+                  </div>
                 </div>
-                <div className="grid gap-2">
-                  <Label htmlFor="year">Year</Label>
-                  <Input
-                    id="year"
-                    name="year"
-                    value={editFormData.year}
-                    onChange={(e) =>
-                      setEditFormData({
-                        ...editFormData,
-                        year: e.target.value,
-                      })
-                    }
-                    placeholder="Enter year"
-                  />
-                </div>
-                </div>
-                
+
                 <div className="grid gap-2">
                   <Label htmlFor="category">Category</Label>
                   <Select

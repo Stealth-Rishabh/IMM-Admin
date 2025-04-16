@@ -356,7 +356,17 @@ const FacultyGallery = () => {
 
   return (
     <div className="border border-gray-200 rounded-lg mx-auto p-6 ">
-      <h1 className="text-2xl font-bold mb-6">Faculty Gallery</h1>
+      <div className="flex justify-between items-center mb-4">
+        <h1 className="text-2xl font-bold">Faculty Gallery</h1>
+        <div className="text-sm text-gray-500">
+          {!isLoading && (
+            <>
+              Showing {filteredImages.filter(filterImages).length} of{" "}
+              {images.length} images
+            </>
+          )}
+        </div>
+      </div>
 
       {/* Upload Section */}
       <Card className="mb-8">
@@ -519,7 +529,7 @@ const FacultyGallery = () => {
       </Card>
 
       {/* Filter Section */}
-      {/* {!isLoading && images.length > 0 && (
+      {!isLoading && images.length > 0 && (
         <div className="mb-6">
           <div className="flex flex-wrap gap-2">
             <Button
@@ -561,7 +571,7 @@ const FacultyGallery = () => {
             </Button>
           </div>
         </div>
-      )} */}
+      )}
 
       {/* Filter Controls */}
       <Card className="mb-6">
