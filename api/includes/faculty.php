@@ -25,7 +25,7 @@ class Faculty {
     }
 
     public function getFaculty() {
-        $stmt = $this->db->query("SELECT id, title, category, description, link, file_name, created_at FROM faculty ORDER BY created_at DESC");
+        $stmt = $this->db->query("SELECT id, title, category, description, link, message, file_name, created_at FROM faculty ORDER BY created_at DESC");
         $faculty = [];
         while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
             $row['url'] = $this->uploadUrl . $row['file_name'];
@@ -34,7 +34,7 @@ class Faculty {
         return $faculty;
     }
 
-    public function uploadFaculty($title, $category, $description, $link, $file) {
+    public function uploadFaculty($title, $category, $description, $link, $file, $message = null) {
         if ($file['error'] !== UPLOAD_ERR_OK) {
             throw new Exception('File upload error: ' . $file['error']);
         }
@@ -52,12 +52,12 @@ class Faculty {
             throw new Exception('Failed to move uploaded file.');
         }
 
-        $stmt = $this->db->prepare("INSERT INTO faculty (title, category, description, link, file_name) VALUES (?, ?, ?, ?, ?)");
-        $stmt->execute([$title, $category, $description, $link, $filename]);
+        $stmt = $this->db->prepare("INSERT INTO faculty (title, category, description, link, message, file_name) VALUES (?, ?, ?, ?, ?, ?)");
+        $stmt->execute([$title, $category, $description, $link, $message, $filename]);
         return $this->db->lastInsertId();
     }
 
-    public function updateFaculty($id, $title, $category, $description, $link, $file = null) {
+    public function updateFaculty($id, $title, $category, $description, $link, $file = null, $message = null) {
         $stmt = $this->db->prepare("SELECT file_name FROM faculty WHERE id = ?");
         $stmt->execute([$id]);
         $current = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -84,8 +84,8 @@ class Faculty {
             }
         }
 
-        $stmt = $this->db->prepare("UPDATE faculty SET title = ?, category = ?, description = ?, link = ?, file_name = ? WHERE id = ?");
-        $stmt->execute([$title, $category, $description, $link, $filename, $id]);
+        $stmt = $this->db->prepare("UPDATE faculty SET title = ?, category = ?, description = ?, link = ?, message = ?, file_name = ? WHERE id = ?");
+        $stmt->execute([$title, $category, $description, $link, $message, $filename, $id]);
         return true;
     }
 

@@ -22,7 +22,7 @@ import {
 import { Upload, X, Edit, ImageIcon, Loader2 } from "lucide-react";
 import { useBreadcrumb } from "@/contexts/BreadcrumbContext";
 import { toast } from "@/hooks/use-toast";
-
+import { Textarea } from "@/components/ui/textarea";
 // API URL (update this to match your local environment)
 const API_URL = "https://stealthlearn.in/imm-admin/api/indexFaculty.php";
 
@@ -46,6 +46,7 @@ const FacultyGallery = () => {
     category: "Uncategorized",
     description: "",
     link: "",
+    message: "",
   });
   const [filters, setFilters] = useState({
     title: "",
@@ -111,6 +112,7 @@ const FacultyGallery = () => {
         category: "Uncategorized",
         description: "",
         link: "",
+        message: "",
       };
     });
 
@@ -156,6 +158,7 @@ const FacultyGallery = () => {
       category: image.category || "Uncategorized",
       description: image.description || "",
       link: image.link || "",
+      message: image.message || "",
     });
     setIsEditDialogOpen(true);
     setNewImagePreview(null);
@@ -172,6 +175,7 @@ const FacultyGallery = () => {
       formData.append("category", editFormData.category);
       formData.append("description", editFormData.description);
       formData.append("link", editFormData.link);
+      formData.append("message", editFormData.message || "");
       formData.append("id", currentImage.id);
 
       if (newImageFile) {
@@ -252,6 +256,7 @@ const FacultyGallery = () => {
         );
         formData.append("description", uploadDetails[index]?.description || "");
         formData.append("link", uploadDetails[index]?.link || "");
+        formData.append("message", uploadDetails[index]?.message || "");
         const response = await fetch(API_URL, {
           method: "POST",
           body: formData,
@@ -503,6 +508,24 @@ const FacultyGallery = () => {
                           placeholder="Enter link"
                         />
                       </div>
+                      {uploadDetails[index]?.category === "Leadership" && (
+                        <div className="grid gap-2">
+                          <Label htmlFor={`message-${index}`}>Message</Label>
+                          <Textarea
+                            id={`message-${index}`}
+                            value={uploadDetails[index]?.message || ""}
+                            onChange={(e) =>
+                              updateUploadDetail(
+                                index,
+                                "message",
+                                e.target.value
+                              )
+                            }
+                            placeholder="Enter message (only for Leadership)"
+                            rows={3}
+                          />
+                        </div>
+                      )}
                     </div>
                   ))}
                   <Button
@@ -789,6 +812,24 @@ const FacultyGallery = () => {
                     placeholder="Enter link"
                   />
                 </div>
+                {editFormData.category === "Leadership" && (
+                  <div className="grid gap-2">
+                    <Label htmlFor="message">Message</Label>
+                    <Textarea
+                      id="message"
+                      name="message"
+                      value={editFormData.message}
+                      onChange={(e) =>
+                        setEditFormData({
+                          ...editFormData,
+                          message: e.target.value,
+                        })
+                      }
+                      placeholder="Enter message (only for Leadership)"
+                      rows={3}
+                    />
+                  </div>
+                )}
               </div>
               <DialogFooter>
                 <Button

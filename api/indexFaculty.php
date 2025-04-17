@@ -24,8 +24,9 @@ try {
                 $category = $_POST['category'] ?? 'Uncategorized';
                 $description = $_POST['description'] ?? null;
                 $link = $_POST['link'] ?? null;
+                $message = $_POST['message'] ?? null;
                 $file = $_FILES['file'] ?? null;
-                $faculty->updateFaculty($id, $title, $category, $description, $link, $file);
+                $faculty->updateFaculty($id, $title, $category, $description, $link, $file, $message);
                 http_response_code(200);
                 echo json_encode(['message' => 'Image updated successfully']);
             } else {
@@ -33,9 +34,10 @@ try {
                 $category = $_POST['category'] ?? 'Uncategorized';
                 $description = $_POST['description'] ?? null;
                 $link = $_POST['link'] ?? null;
+                $message = $_POST['message'] ?? null;
                 $file = $_FILES['file'] ?? null;
                 if (!$file) throw new Exception('No file uploaded.');
-                $id = $faculty->uploadFaculty($title, $category, $description, $link, $file);
+                $id = $faculty->uploadFaculty($title, $category, $description, $link, $file, $message);
                 http_response_code(201);
                 echo json_encode(['id' => $id, 'message' => 'Image uploaded successfully']);
             }
