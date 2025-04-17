@@ -10,6 +10,8 @@ import {
   Trash2,
   Upload,
   ImagePlus,
+  Search,
+  Filter,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -41,6 +43,13 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { useBreadcrumb } from "@/contexts/BreadcrumbContext";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 const Fetch_URL = "https://stealthlearn.in/imm-admin/api/";
 export default function Events() {
@@ -50,22 +59,18 @@ export default function Events() {
     setCurrentBreadcrumb("Events");
   }, [setCurrentBreadcrumb]);
 
-  const [events, setEvents] = useState([]);
+  const eventCategories = [
+    "Events",
+    "Industry Lectures",
+    "Industry Visits",
+    "Corporate Connect",
+  ];
 
-  useEffect(() => {
-    const loadEvents = async () => {
-      try {
-        const response = await fetch(
-          "https://stealthlearn.in/imm-admin/api/index2.php?resource=events"
-        );
-        const data = await response.json();
-        setEvents(data);
-      } catch (error) {
-        console.error("Error loading events:", error);
-      }
-    };
-    loadEvents();
-  }, []);
+  const [events, setEvents] = useState([]);
+  const [filteredEvents, setFilteredEvents] = useState([]);
+  const [filterName, setFilterName] = useState("");
+  const [filterCategory, setFilterCategory] = useState("");
+  const [filterDate, setFilterDate] = useState("");
 
   const [newTag, setNewTag] = useState("");
   const [tags, setTags] = useState([]);
@@ -223,6 +228,56 @@ export default function Events() {
     }
   };
 
+  useEffect(() => {
+    const loadEvents = async () => {
+      try {
+        const response = await fetch(
+          "https://stealthlearn.in/imm-admin/api/index2.php?resource=events"
+        );
+        const data = await response.json();
+        setEvents(data);
+        setFilteredEvents(data);
+      } catch (error) {
+        console.error("Error loading events:", error);
+      }
+    };
+    loadEvents();
+  }, []);
+
+  // Filter events based on filter criteria
+  useEffect(() => {
+    let result = [...events];
+
+    if (filterName) {
+      result = result.filter((event) =>
+        event.title.toLowerCase().includes(filterName.toLowerCase())
+      );
+    }
+
+    if (filterCategory && filterCategory !== "all") {
+      result = result.filter((event) => event.category === filterCategory);
+    }
+
+    if (filterDate) {
+      // Convert both dates to YYYY-MM-DD format for comparison
+      const filterDateFormatted = new Date(filterDate)
+        .toISOString()
+        .split("T")[0];
+      result = result.filter((event) => {
+        const eventDate = new Date(event.date).toISOString().split("T")[0];
+        return eventDate === filterDateFormatted;
+      });
+    }
+
+    setFilteredEvents(result);
+  }, [events, filterName, filterCategory, filterDate]);
+
+  const resetFilters = () => {
+    setFilterName("");
+    setFilterCategory("");
+    setFilterDate("");
+  };
+
   return (
     <div className="mx-auto space-y-8">
       <div className="p-6 bg-white border shadow-sm dark:bg-gray-950 rounded-xl">
@@ -279,12 +334,18 @@ export default function Events() {
                   <label htmlFor="category" className="text-sm font-medium">
                     Category
                   </label>
-                  <Input
-                    id="category"
-                    name="category"
-                    placeholder="education, workshop, etc."
-                    required
-                  />
+                  <Select name="category" defaultValue="">
+                    <SelectTrigger id="category">
+                      <SelectValue placeholder="Select a category" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {eventCategories.map((category) => (
+                        <SelectItem key={category} value={category}>
+                          {category}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </div>
 
                 <div className="space-y-2">
@@ -363,7 +424,6 @@ export default function Events() {
                               : thumbnailPreview || "/placeholder.svg"
                           }
                           alt="Thumbnail preview"
-                          fill
                           className="object-cover h-full w-full"
                         />
                         <Button
@@ -418,7 +478,6 @@ export default function Events() {
                                   : preview || "/placeholder.svg"
                               }
                               alt={`Gallery image ${index + 1}`}
-                              fill
                               className="object-cover h-full w-full"
                             />
                             <Button
@@ -468,15 +527,82 @@ export default function Events() {
           </TabsContent>
 
           <TabsContent value="manage">
-            {events.length === 0 ? (
+            {/* Filter Card */}
+            <Card className="mb-6">
+              <CardContent className="p-4">
+                <div className="flex items-center mb-4">
+                  <Filter className="w-5 h-5 mr-2" />
+                  <h3 className="text-lg font-medium">Filter Events</h3>
+                </div>
+                <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium">Event Name</label>
+                    <div className="relative">
+                      <Search className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
+                      <Input
+                        placeholder="Search by name"
+                        className="pl-10"
+                        value={filterName}
+                        onChange={(e) => setFilterName(e.target.value)}
+                      />
+                    </div>
+                  </div>
+
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium">Category</label>
+                    <Select
+                      value={filterCategory}
+                      onValueChange={setFilterCategory}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="All Categories" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="all">All Categories</SelectItem>
+                        {eventCategories.map((category) => (
+                          <SelectItem key={category} value={category}>
+                            {category}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium">Date</label>
+                    <div className="relative">
+                      <Calendar className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
+                      <Input
+                        type="date"
+                        className="pl-10"
+                        value={filterDate}
+                        onChange={(e) => setFilterDate(e.target.value)}
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                {(filterName || filterCategory || filterDate) && (
+                  <div className="flex justify-end mt-4">
+                    <Button variant="outline" size="sm" onClick={resetFilters}>
+                      Reset Filters
+                    </Button>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+
+            {filteredEvents.length === 0 ? (
               <div className="p-12 text-center border rounded-lg bg-muted/50">
                 <p className="text-muted-foreground">
-                  No events have been created yet.
+                  {events.length === 0
+                    ? "No events have been created yet."
+                    : "No events match your filter criteria."}
                 </p>
               </div>
             ) : (
               <div className="space-y-6">
-                {events.map((event) => (
+                {filteredEvents.map((event) => (
                   <Card key={event.id} className="overflow-hidden">
                     <div className="md:flex">
                       <div className="relative h-48 md:h-auto md:w-1/4">
@@ -487,7 +613,6 @@ export default function Events() {
                               : event.image || "/placeholder.svg"
                           }
                           alt={event.title}
-                          fill
                           className="object-cover h-full w-full"
                         />
                       </div>
@@ -548,7 +673,6 @@ export default function Events() {
                                         : img || "/placeholder.svg"
                                     }
                                     alt={`Gallery image ${index + 1}`}
-                                    fill
                                     className="object-cover rounded-md h-full w-full"
                                   />
                                 </div>
@@ -617,12 +741,21 @@ export default function Events() {
                   >
                     Category
                   </label>
-                  <Input
-                    id="edit-category"
+                  <Select
                     name="edit-category"
-                    defaultValue={editingEvent.category}
-                    required
-                  />
+                    defaultValue={editingEvent.category || ""}
+                  >
+                    <SelectTrigger id="edit-category">
+                      <SelectValue placeholder="Select a category" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {eventCategories.map((category) => (
+                        <SelectItem key={category} value={category}>
+                          {category}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </div>
 
                 <div className="space-y-2">
@@ -701,7 +834,6 @@ export default function Events() {
                               : thumbnailPreview || "/placeholder.svg"
                           }
                           alt="Thumbnail preview"
-                          fill
                           className="object-cover h-full w-full"
                         />
                         <Button
@@ -756,7 +888,6 @@ export default function Events() {
                                   : preview || "/placeholder.svg"
                               }
                               alt={`Gallery image ${index + 1}`}
-                              fill
                               className="object-cover h-full w-full"
                             />
                             <Button

@@ -10,6 +10,8 @@ import {
   Trash2,
   Upload,
   ImagePlus,
+  Search,
+  Filter,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -54,6 +56,10 @@ export default function Clubs() {
   }, [setCurrentBreadcrumb]);
 
   const [clubs, setClubs] = useState([]);
+  const [filteredClubs, setFilteredClubs] = useState([]);
+  const [filterName, setFilterName] = useState("");
+  const [filterCategory, setFilterCategory] = useState("");
+  const [filterDate, setFilterDate] = useState("");
 
   useEffect(() => {
     const loadClubs = async () => {
@@ -63,12 +69,47 @@ export default function Clubs() {
         );
         const data = await response.json();
         setClubs(data);
+        setFilteredClubs(data);
       } catch (error) {
         console.error("Error loading clubs:", error);
       }
     };
     loadClubs();
   }, []);
+
+  // Filter clubs based on filter criteria
+  useEffect(() => {
+    let result = [...clubs];
+
+    if (filterName) {
+      result = result.filter((club) =>
+        club.title.toLowerCase().includes(filterName.toLowerCase())
+      );
+    }
+
+    if (filterCategory && filterCategory !== "All Clubs") {
+      result = result.filter((club) => club.category === filterCategory);
+    }
+
+    if (filterDate) {
+      // Convert both dates to YYYY-MM-DD format for comparison
+      const filterDateFormatted = new Date(filterDate)
+        .toISOString()
+        .split("T")[0];
+      result = result.filter((club) => {
+        const clubDate = new Date(club.date).toISOString().split("T")[0];
+        return clubDate === filterDateFormatted;
+      });
+    }
+
+    setFilteredClubs(result);
+  }, [clubs, filterName, filterCategory, filterDate]);
+
+  const resetFilters = () => {
+    setFilterName("");
+    setFilterCategory("");
+    setFilterDate("");
+  };
 
   const [newTag, setNewTag] = useState("");
   const [tags, setTags] = useState([]);
@@ -488,15 +529,81 @@ export default function Clubs() {
           </TabsContent>
 
           <TabsContent value="manage">
-            {clubs.length === 0 ? (
+            {/* Filter Card */}
+            <Card className="mb-6">
+              <CardContent className="p-4">
+                <div className="flex items-center mb-4">
+                  <Filter className="w-5 h-5 mr-2" />
+                  <h3 className="text-lg font-medium">Filter Clubs</h3>
+                </div>
+                <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium">Club Name</label>
+                    <div className="relative">
+                      <Search className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
+                      <Input
+                        placeholder="Search by name"
+                        className="pl-10"
+                        value={filterName}
+                        onChange={(e) => setFilterName(e.target.value)}
+                      />
+                    </div>
+                  </div>
+
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium">Category</label>
+                    <Select
+                      value={filterCategory}
+                      onValueChange={setFilterCategory}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="All Categories" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {clubCategories.map((category) => (
+                          <SelectItem key={category} value={category}>
+                            {category}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium">Date</label>
+                    <div className="relative">
+                      <Calendar className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
+                      <Input
+                        type="date"
+                        className="pl-10"
+                        value={filterDate}
+                        onChange={(e) => setFilterDate(e.target.value)}
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                {(filterName || filterCategory || filterDate) && (
+                  <div className="flex justify-end mt-4">
+                    <Button variant="outline" size="sm" onClick={resetFilters}>
+                      Reset Filters
+                    </Button>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+
+            {filteredClubs.length === 0 ? (
               <div className="p-12 text-center border rounded-lg bg-muted/50">
                 <p className="text-muted-foreground">
-                  No clubs have been created yet.
+                  {clubs.length === 0
+                    ? "No clubs have been created yet."
+                    : "No clubs match your filter criteria."}
                 </p>
               </div>
             ) : (
               <div className="space-y-6">
-                {clubs.map((club) => (
+                {filteredClubs.map((club) => (
                   <Card key={club.id} className="overflow-hidden">
                     <div className="md:flex">
                       <div className="relative h-48 md:h-auto md:w-1/4">
