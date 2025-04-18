@@ -41,7 +41,7 @@ const Research = () => {
   const [isUploading, setIsUploading] = useState(false);
   const [editFormData, setEditFormData] = useState({
     title: "",
-    category: "Uncategorized",
+    category: "Uncategorized Research",
     description: "",
   });
 
@@ -69,7 +69,15 @@ const Research = () => {
       }
 
       const data = await response.json();
-      setImages(data);
+      setImages(
+        data.filter(
+          (image) =>
+            
+            image.category === "Uncategorized Research" ||
+            image.category === "International" ||
+            image.category === "National"
+        )
+      );
     } catch (error) {
       console.error("Error fetching images:", error);
       toast({
@@ -89,7 +97,7 @@ const Research = () => {
     // Initialize upload details with default values
     const details = files.map((file) => ({
       title: file.name.split(".")[0],
-      category: "Uncategorized",
+      category: "Uncategorized Research",
       description: "",
     }));
 
@@ -132,7 +140,7 @@ const Research = () => {
     setCurrentImage(image);
     setEditFormData({
       title: image.title || "",
-      category: image.category || "Uncategorized",
+      category: image.category || "Uncategorized Research",
       description: image.description || "",
     });
     setIsEditDialogOpen(true);
@@ -219,7 +227,7 @@ const Research = () => {
         );
         formData.append(
           "category",
-          uploadDetails[index]?.category || "Uncategorized"
+          uploadDetails[index]?.category || "Uncategorized Research"
         );
         formData.append("description", uploadDetails[index]?.description || "");
 
@@ -426,7 +434,8 @@ const Research = () => {
                         <Label htmlFor={`category-${index}`}>Category</Label>
                         <Select
                           value={
-                            uploadDetails[index]?.category || "Uncategorized"
+                            uploadDetails[index]?.category ||
+                            "Uncategorized Research"
                           }
                           onValueChange={(value) =>
                             updateUploadDetail(index, "category", value)
@@ -436,8 +445,8 @@ const Research = () => {
                             <SelectValue placeholder="Select a category" />
                           </SelectTrigger>
                           <SelectContent>
-                            <SelectItem value="Uncategorized">
-                              Uncategorized
+                            <SelectItem value="Uncategorized Research">
+                              Uncategorized Research
                             </SelectItem>
                             <SelectItem value="International">
                               International Conference
@@ -537,8 +546,8 @@ const Research = () => {
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="all">All Categories</SelectItem>
-                      <SelectItem value="Uncategorized">
-                        Uncategorized
+                      <SelectItem value="Uncategorized Research">
+                        Uncategorized Research
                       </SelectItem>
                       <SelectItem value="International">
                         International Conference
@@ -687,8 +696,8 @@ const Research = () => {
                       <SelectValue placeholder="Select a category" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="Uncategorized">
-                        Uncategorized
+                      <SelectItem value="Uncategorized Research">
+                        Uncategorized Research
                       </SelectItem>
                       <SelectItem value="Nature">Nature</SelectItem>
                       <SelectItem value="Travel">Travel</SelectItem>

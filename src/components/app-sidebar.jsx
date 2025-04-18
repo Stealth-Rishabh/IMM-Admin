@@ -15,7 +15,8 @@ import {
   Calendar,
   UserSquare2,
   GraduationCap,
-  School
+  School,
+  Award,
 } from "lucide-react";
 
 import { NavMain } from "@/components/nav-main";
@@ -85,6 +86,11 @@ const data = {
       title: "Placements",
       url: "/placements",
       icon: GraduationCap,
+    },
+    {
+      title: "Award",
+      url: "/award",
+      icon: Award,
     },
     // {
     //   title: "Documentation",

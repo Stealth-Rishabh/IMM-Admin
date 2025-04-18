@@ -26,7 +26,7 @@ import { toast } from "@/hooks/use-toast";
 // API URL (update this to match your local environment)
 const API_URL = "https://stealthlearn.in/imm-admin/api/index.php";
 
-const ImageGallery = () => {
+const AwardGallery = () => {
   const { setCurrentBreadcrumb } = useBreadcrumb();
   const [images, setImages] = useState([]);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
@@ -41,7 +41,7 @@ const ImageGallery = () => {
   const [isUploading, setIsUploading] = useState(false);
   const [editFormData, setEditFormData] = useState({
     title: "",
-    category: "Uncategorized",
+    category: "Award",
     description: "",
   });
 
@@ -53,7 +53,7 @@ const ImageGallery = () => {
   });
 
   useEffect(() => {
-    setCurrentBreadcrumb("Image Gallery");
+    setCurrentBreadcrumb("Award Gallery");
     // Load images when component mounts
     fetchImages();
   }, [setCurrentBreadcrumb, isEditDialogOpen]);
@@ -69,7 +69,7 @@ const ImageGallery = () => {
       }
 
       const data = await response.json();
-      setImages(data);
+      setImages(data.filter((image) => image.category === "Award"));
     } catch (error) {
       console.error("Error fetching images:", error);
       toast({
@@ -89,7 +89,7 @@ const ImageGallery = () => {
     // Initialize upload details with default values
     const details = files.map((file) => ({
       title: file.name.split(".")[0],
-      category: "Uncategorized",
+      category: "Award",
       description: "",
     }));
 
@@ -132,7 +132,7 @@ const ImageGallery = () => {
     setCurrentImage(image);
     setEditFormData({
       title: image.title || "",
-      category: image.category || "Uncategorized",
+      category: image.category || "Award",
       description: image.description || "",
     });
     setIsEditDialogOpen(true);
@@ -325,11 +325,7 @@ const ImageGallery = () => {
     }
 
     // Keep the existing filter to exclude International and National categories
-    if (
-      image.category === "International" ||
-      image.category === "National" ||
-      image.category === "Award"
-    ) {
+    if (image.category === "International" || image.category === "National") {
       return false;
     }
 
@@ -347,7 +343,7 @@ const ImageGallery = () => {
   return (
     <div className="border border-gray-200 rounded-lg mx-auto p-6 ">
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold">Image Gallery</h1>
+        <h1 className="text-2xl font-bold">Award Gallery</h1>
         <div className="text-sm text-gray-500">
           {!isLoading && (
             <>
@@ -434,9 +430,7 @@ const ImageGallery = () => {
                       <div className="grid gap-2">
                         <Label htmlFor={`category-${index}`}>Category</Label>
                         <Select
-                          value={
-                            uploadDetails[index]?.category || "Uncategorized"
-                          }
+                          value={uploadDetails[index]?.category || "Award"}
                           onValueChange={(value) =>
                             updateUploadDetail(index, "category", value)
                           }
@@ -445,15 +439,8 @@ const ImageGallery = () => {
                             <SelectValue placeholder="Select a category" />
                           </SelectTrigger>
                           <SelectContent>
-                            <SelectItem value="Uncategorized">
-                              Uncategorized
-                            </SelectItem>
-                            <SelectItem value="Nature">Nature</SelectItem>
-                            <SelectItem value="Travel">Travel</SelectItem>
-                            <SelectItem value="Food">Food</SelectItem>
-                            <SelectItem value="People">People</SelectItem>
-                            <SelectItem value="Architecture">
-                              Architecture
+                            <SelectItem value="Award" selected>
+                              Award
                             </SelectItem>
                           </SelectContent>
                         </Select>
@@ -547,14 +534,7 @@ const ImageGallery = () => {
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="all">All Categories</SelectItem>
-                      <SelectItem value="Uncategorized">
-                        Uncategorized
-                      </SelectItem>
-                      <SelectItem value="Nature">Nature</SelectItem>
-                      <SelectItem value="Travel">Travel</SelectItem>
-                      <SelectItem value="Food">Food</SelectItem>
-                      <SelectItem value="People">People</SelectItem>
-                      <SelectItem value="Architecture">Architecture</SelectItem>
+                      <SelectItem value="Award">Award</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -696,14 +676,7 @@ const ImageGallery = () => {
                       <SelectValue placeholder="Select a category" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="Uncategorized">
-                        Uncategorized
-                      </SelectItem>
-                      <SelectItem value="Nature">Nature</SelectItem>
-                      <SelectItem value="Travel">Travel</SelectItem>
-                      <SelectItem value="Food">Food</SelectItem>
-                      <SelectItem value="People">People</SelectItem>
-                      <SelectItem value="Architecture">Architecture</SelectItem>
+                      <SelectItem value="Award">Award</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -751,4 +724,4 @@ const ImageGallery = () => {
   );
 };
 
-export default ImageGallery;
+export default AwardGallery;
