@@ -514,6 +514,9 @@ const PlacementData = () => {
                             <SelectItem value="Uncategorized">
                               Uncategorized
                             </SelectItem>
+                            <SelectItem value="Summer">
+                              Internship
+                            </SelectItem>
                             <SelectItem value="Summer Placement">
                               Summer Placement
                             </SelectItem>

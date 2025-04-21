@@ -19,18 +19,29 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Upload, X, Edit, ImageIcon, Loader2 } from "lucide-react";
+import {
+  Upload,
+  X,
+  Edit,
+  UserIcon,
+  Loader2,
+  Mail,
+  Phone,
+  Building,
+  MapPin,
+} from "lucide-react";
 import { useBreadcrumb } from "@/contexts/BreadcrumbContext";
 import { toast } from "@/hooks/use-toast";
+import { Textarea } from "@/components/ui/textarea";
 
 // API URL (update this to match your local environment)
-const API_URL = "https://stealthlearn.in/imm-admin/api/index.php";
+const API_URL = "https://stealthlearn.in/imm-admin/api/indexRecruiter.php";
 
-const AwardGallery = () => {
+const Recruiters = () => {
   const { setCurrentBreadcrumb } = useBreadcrumb();
-  const [images, setImages] = useState([]);
+  const [recruiters, setRecruiters] = useState([]);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
-  const [currentImage, setCurrentImage] = useState(null);
+  const [currentRecruiter, setCurrentRecruiter] = useState(null);
   const fileInputRef = useRef(null);
   const [selectedFiles, setSelectedFiles] = useState([]);
   const [uploadDetails, setUploadDetails] = useState([]);
@@ -41,7 +52,7 @@ const AwardGallery = () => {
   const [isUploading, setIsUploading] = useState(false);
   const [editFormData, setEditFormData] = useState({
     title: "",
-    category: "Award",
+    category: "Uncategorized",
     description: "",
   });
 
@@ -53,13 +64,13 @@ const AwardGallery = () => {
   });
 
   useEffect(() => {
-    setCurrentBreadcrumb("Award Gallery");
-    // Load images when component mounts
-    fetchImages();
+    setCurrentBreadcrumb("Recruiters");
+    // Load recruiters when component mounts
+    fetchRecruiters();
   }, [setCurrentBreadcrumb, isEditDialogOpen]);
 
-  // Fetch images from the API
-  const fetchImages = async () => {
+  // Fetch recruiters from the API
+  const fetchRecruiters = async () => {
     setIsLoading(true);
     try {
       const response = await fetch(API_URL);
@@ -69,18 +80,19 @@ const AwardGallery = () => {
       }
 
       const data = await response.json();
-      setImages(data.filter((image) => image.category === "Award"));
+      setRecruiters(data);
     } catch (error) {
-      console.error("Error fetching images:", error);
+      console.error("Error fetching recruiters:", error);
       toast({
         title: "Error",
-        description: "Failed to load images. Please try again later.",
+        description: "Failed to load recruiters. Please try again later.",
         variant: "destructive",
       });
     } finally {
       setIsLoading(false);
     }
   };
+
   const handleFileChange = (e) => {
     const files = Array.from(e.target.files);
     setSelectedFiles(files);
@@ -95,7 +107,7 @@ const AwardGallery = () => {
 
       return {
         title,
-        category: "Award",
+        category: "Uncategorized",
         description: "",
       };
     });
@@ -104,7 +116,7 @@ const AwardGallery = () => {
   };
 
   const handleDelete = async (id) => {
-    if (!window.confirm("Are you sure you want to delete this image?")) {
+    if (!window.confirm("Are you sure you want to delete this recruiter?")) {
       return;
     }
 
@@ -120,34 +132,34 @@ const AwardGallery = () => {
       await response.json();
 
       // Update local state
-      setImages(images.filter((image) => image.id !== id));
+      setRecruiters(recruiters.filter((recruiter) => recruiter.id !== id));
       toast({
         title: "Success",
-        description: "Image deleted successfully",
+        description: "Recruiter deleted successfully",
       });
     } catch (error) {
-      console.error("Error deleting image:", error);
+      console.error("Error deleting recruiter:", error);
       toast({
         title: "Error",
-        description: "Failed to delete image. Please try again.",
+        description: "Failed to delete recruiter. Please try again.",
         variant: "destructive",
       });
     }
   };
 
-  const openEditDialog = (image) => {
-    setCurrentImage(image);
+  const openEditDialog = (recruiter) => {
+    setCurrentRecruiter(recruiter);
     setEditFormData({
-      title: image.title || "",
-      category: image.category || "Award",
-      description: image.description || "",
+      title: recruiter.title || "",
+      category: recruiter.category || "Uncategorized",
+      description: recruiter.description || "",
     });
     setIsEditDialogOpen(true);
     setNewImagePreview(null);
     setNewImageFile(null);
   };
 
-  const handleUpdateImage = async (e) => {
+  const handleUpdateRecruiter = async (e) => {
     e.preventDefault();
     setIsUploading(true);
 
@@ -156,7 +168,7 @@ const AwardGallery = () => {
       formData.append("title", editFormData.title);
       formData.append("category", editFormData.category);
       formData.append("description", editFormData.description);
-      formData.append("id", currentImage.id);
+      formData.append("id", currentRecruiter.id);
 
       if (newImageFile) {
         formData.append("file", newImageFile);
@@ -169,16 +181,21 @@ const AwardGallery = () => {
 
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.error || "Failed to update image");
+        throw new Error(errorData.error || "Failed to update recruiter");
       }
 
-      const updatedImage = await response.json();
-      setImages(
-        images.map((image) =>
-          image.id === currentImage.id ? { ...image, ...updatedImage } : image
+      const updatedRecruiter = await response.json();
+      setRecruiters(
+        recruiters.map((recruiter) =>
+          recruiter.id === currentRecruiter.id
+            ? { ...recruiter, ...updatedRecruiter }
+            : recruiter
         )
       );
-      toast({ title: "Success", description: "Image updated successfully" });
+      toast({
+        title: "Success",
+        description: "Recruiter updated successfully",
+      });
       setIsEditDialogOpen(false);
     } catch (error) {
       toast({
@@ -263,8 +280,8 @@ const AwardGallery = () => {
 
       const results = await Promise.all(uploadPromises);
 
-      // Refresh the image list
-      await fetchImages();
+      // Refresh the recruiter list
+      await fetchRecruiters();
 
       // Clear selected files
       setSelectedFiles([]);
@@ -272,10 +289,10 @@ const AwardGallery = () => {
 
       toast({
         title: "Success",
-        description: `Successfully uploaded ${results.length} image(s)`,
+        description: `Successfully uploaded ${results.length} recruiter(s)`,
       });
     } catch (error) {
-      console.error("Error uploading images:", error);
+      console.error("Error uploading recruiters:", error);
       toast({
         title: "Error",
         description: `Failed to upload: ${error.message}`,
@@ -306,12 +323,12 @@ const AwardGallery = () => {
     }));
   };
 
-  // Filter function for the images
-  const filterImages = (image) => {
+  // Filter function for the recruiters
+  const filterRecruiters = (recruiter) => {
     // Title filter
     if (
       filters.title &&
-      !image.title?.toLowerCase().includes(filters.title.toLowerCase())
+      !recruiter.title?.toLowerCase().includes(filters.title.toLowerCase())
     ) {
       return false;
     }
@@ -319,7 +336,7 @@ const AwardGallery = () => {
     // Description filter
     if (
       filters.description &&
-      !image.description
+      !recruiter.description
         ?.toLowerCase()
         .includes(filters.description.toLowerCase())
     ) {
@@ -327,12 +344,7 @@ const AwardGallery = () => {
     }
 
     // Category filter
-    if (filters.category !== "all" && image.category !== filters.category) {
-      return false;
-    }
-
-    // Keep the existing filter to exclude International and National categories
-    if (image.category === "International" || image.category === "National") {
+    if (filters.category !== "all" && recruiter.category !== filters.category) {
       return false;
     }
 
@@ -348,14 +360,14 @@ const AwardGallery = () => {
   };
 
   return (
-    <div className="border border-gray-200 rounded-lg mx-auto p-6 ">
+    <div className="border border-gray-200 rounded-lg mx-auto p-6">
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold">Award Gallery</h1>
+        <h1 className="text-2xl font-bold">Recruiters</h1>
         <div className="text-sm text-gray-500">
           {!isLoading && (
             <>
-              Showing {images.filter(filterImages).length} of {images.length}{" "}
-              images
+              Showing {recruiters.filter(filterRecruiters).length} of{" "}
+              {recruiters.length} recruiters
             </>
           )}
         </div>
@@ -368,6 +380,15 @@ const AwardGallery = () => {
             <div
               className="flex flex-col items-center justify-center p-6 border-2 border-dashed border-gray-300 rounded-lg bg-gray-50 hover:bg-gray-100 transition-colors cursor-pointer"
               onClick={triggerFileInput}
+              onDragOver={(e) => e.preventDefault()}
+              onDragEnter={(e) => e.preventDefault()}
+              onDrop={(e) => {
+                e.preventDefault();
+                const files = Array.from(e.dataTransfer.files);
+                if (files.length > 0) {
+                  handleFileChange({ target: { files } });
+                }
+              }}
             >
               <Upload className="h-10 w-10 text-gray-400 mb-2" />
               <p className="text-sm text-gray-600 mb-1">
@@ -400,7 +421,7 @@ const AwardGallery = () => {
                               URL.createObjectURL(file) || "/placeholder.svg"
                             }
                             alt="Preview"
-                            className="h-full w-full object-cover"
+                            className="h-full w-full object-contain"
                           />
                         </div>
                         <div className="flex-1 min-w-0">
@@ -431,13 +452,15 @@ const AwardGallery = () => {
                           onChange={(e) =>
                             updateUploadDetail(index, "title", e.target.value)
                           }
-                          placeholder="Enter image title"
+                          placeholder="Enter recruiter title"
                         />
                       </div>
                       <div className="grid gap-2">
                         <Label htmlFor={`category-${index}`}>Category</Label>
                         <Select
-                          value={uploadDetails[index]?.category || "Award"}
+                          value={
+                            uploadDetails[index]?.category || "Uncategorized"
+                          }
                           onValueChange={(value) =>
                             updateUploadDetail(index, "category", value)
                           }
@@ -446,8 +469,14 @@ const AwardGallery = () => {
                             <SelectValue placeholder="Select a category" />
                           </SelectTrigger>
                           <SelectContent>
-                            <SelectItem value="Award" selected>
-                              Award
+                            <SelectItem value="Uncategorized">
+                              Uncategorized
+                            </SelectItem>
+                            <SelectItem value="Final Placement Recruiter">
+                              Final Placement Recruiter
+                            </SelectItem>
+                            <SelectItem value="Summer Internship Recruiter">
+                              Summer Internship Recruiter
                             </SelectItem>
                           </SelectContent>
                         </Select>
@@ -466,7 +495,7 @@ const AwardGallery = () => {
                               e.target.value
                             )
                           }
-                          placeholder="Enter image description"
+                          placeholder="Enter recruiter description"
                         />
                       </div>
                     </div>
@@ -483,7 +512,7 @@ const AwardGallery = () => {
                       </>
                     ) : (
                       `Upload ${selectedFiles.length} ${
-                        selectedFiles.length === 1 ? "Image" : "Images"
+                        selectedFiles.length === 1 ? "Recruiter" : "Recruiters"
                       }`
                     )}
                   </Button>
@@ -499,12 +528,12 @@ const AwardGallery = () => {
         <div className="flex justify-center items-center py-12">
           <Loader2 className="w-10 h-10 animate-spin text-gray-400" />
         </div>
-      ) : images.length > 0 ? (
+      ) : recruiters.length > 0 ? (
         <>
           {/* Filter controls */}
           <Card className="mb-6">
             <CardContent className="pt-6">
-              <h3 className="font-medium mb-4">Filter Gallery</h3>
+              <h3 className="font-medium mb-4">Filter Recruiters</h3>
               <div className="grid gap-4 md:grid-cols-3">
                 <div className="grid gap-2">
                   <Label htmlFor="title-filter">Title</Label>
@@ -541,7 +570,15 @@ const AwardGallery = () => {
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="all">All Categories</SelectItem>
-                      <SelectItem value="Award">Award</SelectItem>
+                      <SelectItem value="Uncategorized">
+                        Uncategorized
+                      </SelectItem>
+                      <SelectItem value="Final Placement Recruiter">
+                        Final Placement Recruiter
+                      </SelectItem>
+                      <SelectItem value="Summer Internship Recruiter">
+                        Summer Internship Recruiter
+                      </SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -549,22 +586,22 @@ const AwardGallery = () => {
             </CardContent>
           </Card>
 
-          {images.filter(filterImages).length > 0 ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-              {images.filter(filterImages).map((image) => (
-                <Card key={image.id} className="overflow-hidden group">
-                  <div className="relative aspect-square">
+          {recruiters.filter(filterRecruiters).length > 0 ? (
+            <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-4">
+              {recruiters.filter(filterRecruiters).map((recruiter) => (
+                <Card key={recruiter.id} className="overflow-hidden group">
+                  <div className="relative aspect-video">
                     <img
-                      src={image.url || "/placeholder.svg"}
-                      alt={image.title}
-                      className="w-full h-full object-cover"
+                      src={recruiter.url || "/placeholder.svg"}
+                      alt={recruiter.title}
+                      className="w-full h-full aspect-video object-contain"
                     />
                     <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-40 transition-all flex items-center justify-center opacity-0 group-hover:opacity-100">
                       <Button
                         variant="ghost"
                         size="icon"
                         className="rounded-full bg-white text-gray-700 mr-2 hover:bg-gray-200"
-                        onClick={() => openEditDialog(image)}
+                        onClick={() => openEditDialog(recruiter)}
                       >
                         <Edit className="h-4 w-4" />
                       </Button>
@@ -572,7 +609,7 @@ const AwardGallery = () => {
                         variant="ghost"
                         size="icon"
                         className="rounded-full bg-white text-gray-700 hover:bg-gray-200"
-                        onClick={() => handleDelete(image.id)}
+                        onClick={() => handleDelete(recruiter.id)}
                       >
                         <X className="h-4 w-4" />
                       </Button>
@@ -580,12 +617,14 @@ const AwardGallery = () => {
                   </div>
                   <CardContent className="p-3">
                     <h3 className="font-medium text-sm truncate">
-                      {image.title}
+                      {recruiter.title}
                     </h3>
-                    <p className="text-xs text-gray-500">{image.category}</p>
-                    {image.description && (
+                    <p className="text-xs text-gray-500">
+                      {recruiter.category}
+                    </p>
+                    {recruiter.description && (
                       <p className="text-xs text-gray-500 mt-1 truncate">
-                        {image.description}
+                        {recruiter.description}
                       </p>
                     )}
                   </CardContent>
@@ -595,10 +634,10 @@ const AwardGallery = () => {
           ) : (
             <div className="text-center py-12">
               <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gray-100 mb-4">
-                <ImageIcon className="h-8 w-8 text-gray-400" />
+                <UserIcon className="h-8 w-8 text-gray-400" />
               </div>
               <h3 className="text-lg font-medium text-gray-900 mb-1">
-                No images found matching the selected filters
+                No recruiters found matching the selected filters
               </h3>
               <p className="text-gray-500 mb-4">
                 Try adjusting your search criteria
@@ -610,32 +649,36 @@ const AwardGallery = () => {
       ) : (
         <div className="text-center py-12">
           <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gray-100 mb-4">
-            <ImageIcon className="h-8 w-8 text-gray-400" />
+            <UserIcon className="h-8 w-8 text-gray-400" />
           </div>
           <h3 className="text-lg font-medium text-gray-900 mb-1">
-            No images yet
+            No recruiters yet
           </h3>
-          <p className="text-gray-500 mb-4">Upload images to see them here</p>
-          <Button onClick={triggerFileInput}>Upload Images</Button>
+          <p className="text-gray-500 mb-4">
+            Upload recruiters to see them here
+          </p>
+          <Button onClick={triggerFileInput}>Upload Recruiters</Button>
         </div>
       )}
 
       {/* Edit Dialog */}
-      {currentImage && (
+      {currentRecruiter && (
         <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
           <DialogContent>
             <DialogHeader>
-              <DialogTitle>Edit Image Details</DialogTitle>
+              <DialogTitle>Edit Recruiter Details</DialogTitle>
             </DialogHeader>
-            <form onSubmit={handleUpdateImage}>
+            <form onSubmit={handleUpdateRecruiter}>
               <div className="grid gap-4 py-4">
                 <div className="relative mb-4 group">
                   <img
                     src={
-                      newImagePreview || currentImage.url || "/placeholder.svg"
+                      newImagePreview ||
+                      currentRecruiter.url ||
+                      "/placeholder.svg"
                     }
-                    alt={currentImage.title}
-                    className="w-full h-40 object-contain rounded-md"
+                    alt={currentRecruiter.title}
+                    className="w-full h-40 aspect-video object-contain rounded-md"
                   />
                   <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 bg-black bg-opacity-30 transition-opacity rounded-md">
                     <Button
@@ -683,7 +726,15 @@ const AwardGallery = () => {
                       <SelectValue placeholder="Select a category" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="Award">Award</SelectItem>
+                      <SelectItem value="Uncategorized">
+                        Uncategorized
+                      </SelectItem>
+                      <SelectItem value="Final Placement Recruiter">
+                        Final Placement Recruiter
+                      </SelectItem>
+                      <SelectItem value="Summer Internship Recruiter">
+                        Summer Internship Recruiter
+                      </SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -699,7 +750,7 @@ const AwardGallery = () => {
                         description: e.target.value,
                       })
                     }
-                    placeholder="Enter image description"
+                    placeholder="Enter recruiter description"
                   />
                 </div>
               </div>
@@ -731,4 +782,4 @@ const AwardGallery = () => {
   );
 };
 
-export default AwardGallery;
+export default Recruiters;

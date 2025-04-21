@@ -92,6 +92,11 @@ const data = {
       url: "/award",
       icon: Award,
     },
+    {
+      title: "Recruiters",
+      url: "/recruiters",
+      icon: Users,
+    },
     // {
     //   title: "Documentation",
     //   url: "#",
