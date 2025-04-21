@@ -420,6 +420,15 @@ const PlacementData = () => {
             <div
               className="flex flex-col items-center justify-center p-6 border-2 border-dashed border-gray-300 rounded-lg bg-gray-50 hover:bg-gray-100 transition-colors cursor-pointer"
               onClick={triggerFileInput}
+              onDragOver={(e) => e.preventDefault()}
+              onDragEnter={(e) => e.preventDefault()}
+              onDrop={(e) => {
+                e.preventDefault();
+                const files = Array.from(e.dataTransfer.files);
+                if (files.length > 0) {
+                  handleFileChange({ target: { files } });
+                }
+              }}
             >
               <Upload className="h-10 w-10 text-gray-400 mb-2" />
               <p className="text-sm text-gray-600 mb-1">
@@ -514,9 +523,7 @@ const PlacementData = () => {
                             <SelectItem value="Uncategorized">
                               Uncategorized
                             </SelectItem>
-                            <SelectItem value="Summer">
-                              Internship
-                            </SelectItem>
+
                             <SelectItem value="Summer Placement">
                               Summer Placement
                             </SelectItem>
