@@ -59,6 +59,13 @@ const EduTour = () => {
   const [isDeleteAlertOpen, setIsDeleteAlertOpen] = useState(false);
   const [tourToDelete, setTourToDelete] = useState(null);
 
+  // Add default values for new uploads
+  const [defaultUploadValues, setDefaultUploadValues] = useState({
+    category: "Uncategorized",
+    subcategory: "",
+    description: "",
+  });
+
   // Add filter states
   const [filters, setFilters] = useState({
     title: "",
@@ -111,9 +118,9 @@ const EduTour = () => {
 
       return {
         title,
-        category: "Uncategorized",
-        subcategory: "",
-        description: "",
+        category: defaultUploadValues.category,
+        subcategory: defaultUploadValues.subcategory,
+        description: defaultUploadValues.description,
       };
     });
 
@@ -378,6 +385,24 @@ const EduTour = () => {
     });
   };
 
+  // Handle changes to default upload values
+  const handleDefaultValueChange = (field, value) => {
+    setDefaultUploadValues((prev) => ({
+      ...prev,
+      [field]: value,
+    }));
+
+    // Also update all current upload details with this new value
+    if (selectedFiles.length > 0) {
+      setUploadDetails((prev) =>
+        prev.map((detail) => ({
+          ...detail,
+          [field]: value,
+        }))
+      );
+    }
+  };
+
   return (
     <div className="border border-gray-200 rounded-lg mx-auto p-6 ">
       <div className="flex justify-between items-center mb-6">
@@ -395,6 +420,64 @@ const EduTour = () => {
       <Card className="mb-8">
         <CardContent className="pt-6">
           <div className="grid gap-6">
+            {/* Default values section */}
+            <div className="border rounded-lg p-4 mb-4">
+              <h3 className="font-medium mb-3">Default Upload Settings</h3>
+              <p className="text-sm text-gray-500 mb-4">
+                Set these values before selecting files to apply them to all
+                uploads
+              </p>
+              <div className="grid gap-4 md:grid-cols-2">
+                <div className="grid gap-2">
+                  <Label htmlFor="default-category">Category</Label>
+                  <Select
+                    value={defaultUploadValues.category}
+                    onValueChange={(value) =>
+                      handleDefaultValueChange("category", value)
+                    }
+                  >
+                    <SelectTrigger id="default-category">
+                      <SelectValue placeholder="Select a category" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="Uncategorized">
+                        Uncategorized
+                      </SelectItem>
+                      <SelectItem value="Industrial">Industrial</SelectItem>
+                      <SelectItem value="Educational">Educational</SelectItem>
+                      <SelectItem value="Field Trip">Field Trip</SelectItem>
+                      <SelectItem value="Heritage">Heritage</SelectItem>
+                      <SelectItem value="Adventure">Adventure</SelectItem>
+                      <SelectItem value="Other">Other</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="grid gap-2">
+                  <Label htmlFor="default-subcategory">Subcategory</Label>
+                  <Input
+                    id="default-subcategory"
+                    value={defaultUploadValues.subcategory}
+                    onChange={(e) =>
+                      handleDefaultValueChange("subcategory", e.target.value)
+                    }
+                    placeholder="Enter default subcategory"
+                  />
+                </div>
+                {/* <div className="grid gap-2">
+                  <Label htmlFor="default-description">Description</Label>
+                  <Input
+                    id="default-description"
+                    value={defaultUploadValues.description}
+                    onChange={(e) =>
+                      handleDefaultValueChange("description", e.target.value)
+                    }
+                    placeholder="Enter default description"
+                  />
+                </div> */}
+              </div>
+            </div>
+
+            {/* File upload area */}
             <div
               className="flex flex-col items-center justify-center p-6 border-2 border-dashed border-gray-300 rounded-lg bg-gray-50 hover:bg-gray-100 transition-colors cursor-pointer"
               onClick={triggerFileInput}

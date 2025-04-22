@@ -45,6 +45,11 @@ const ImageGallery = () => {
     description: "",
   });
 
+  // Add default values for new uploads
+  const [defaultUploadValues, setDefaultUploadValues] = useState({
+    category: "Uncategorized",
+  });
+
   // Add filter states
   const [filters, setFilters] = useState({
     title: "",
@@ -96,12 +101,30 @@ const ImageGallery = () => {
 
       return {
         title,
-        category: "Uncategorized",
+        category: defaultUploadValues.category,
         description: "",
       };
     });
 
     setUploadDetails(details);
+  };
+
+  // Handle changes to default upload values
+  const handleDefaultValueChange = (field, value) => {
+    setDefaultUploadValues((prev) => ({
+      ...prev,
+      [field]: value,
+    }));
+
+    // Also update all current upload details with this new value
+    if (selectedFiles.length > 0) {
+      setUploadDetails((prev) =>
+        prev.map((detail) => ({
+          ...detail,
+          [field]: value,
+        }))
+      );
+    }
   };
 
   const handleDelete = async (id) => {
@@ -359,8 +382,8 @@ const ImageGallery = () => {
         <div className="text-sm text-gray-500">
           {!isLoading && (
             <>
-              Showing {images.filter(filterImages).length} of {images.length}{" "}
-              images
+              Showing {images.filter(filterImages).length} of{" "}
+              {images.filter(filterImages).length} images
             </>
           )}
         </div>
@@ -370,6 +393,51 @@ const ImageGallery = () => {
       <Card className="mb-8">
         <CardContent className="pt-6">
           <div className="grid gap-6">
+            {/* Default values section */}
+            <div className="border rounded-lg p-4 mb-4">
+              <h3 className="font-medium mb-3">Default Upload Settings</h3>
+              <p className="text-sm text-gray-500 mb-4">
+                Set these values before selecting files to apply them to all
+                uploads
+              </p>
+              <div className="grid gap-4">
+                <div className="grid gap-2">
+                  <Label htmlFor="default-category">Category</Label>
+                  <Select
+                    value={defaultUploadValues.category}
+                    onValueChange={(value) =>
+                      handleDefaultValueChange("category", value)
+                    }
+                  >
+                    <SelectTrigger id="default-category">
+                      <SelectValue placeholder="Select a category" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="Uncategorized">
+                        Uncategorized
+                      </SelectItem>
+                      <SelectItem value="Campus">Campus</SelectItem>
+                      <SelectItem value="Faculty">Faculty</SelectItem>
+                      <SelectItem value="Student">Student</SelectItem>
+                      <SelectItem value="Sports">Sports</SelectItem>
+                      <SelectItem value="Events">Events</SelectItem>
+                      <SelectItem value="Library">Library</SelectItem>
+                      <SelectItem value="Canteen">Canteen</SelectItem>
+                      <SelectItem value="Infrastructure">
+                        Infrastructure
+                      </SelectItem>
+                      <SelectItem value="Classroom">Classroom</SelectItem>
+                      <SelectItem value="Auditorium">Auditorium</SelectItem>
+                      <SelectItem value="Activities">Activities</SelectItem>
+                      <SelectItem value="Festivals">Festivals</SelectItem>
+                      <SelectItem value="Celebrations">Celebrations</SelectItem>
+                      <SelectItem value="Other">Other</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+            </div>
+
             <div
               className="flex flex-col items-center justify-center p-6 border-2 border-dashed border-gray-300 rounded-lg bg-gray-50 hover:bg-gray-100 transition-colors cursor-pointer"
               onClick={triggerFileInput}

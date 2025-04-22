@@ -45,6 +45,11 @@ const Research = () => {
     description: "",
   });
 
+  // Add default values for new uploads
+  const [defaultUploadValues, setDefaultUploadValues] = useState({
+    category: "Uncategorized Research",
+  });
+
   // Add filter states
   const [filters, setFilters] = useState({
     title: "",
@@ -72,7 +77,6 @@ const Research = () => {
       setImages(
         data.filter(
           (image) =>
-            
             image.category === "Uncategorized Research" ||
             image.category === "International" ||
             image.category === "National"
@@ -97,11 +101,29 @@ const Research = () => {
     // Initialize upload details with default values
     const details = files.map((file) => ({
       title: file.name.split(".")[0],
-      category: "Uncategorized Research",
+      category: defaultUploadValues.category,
       description: "",
     }));
 
     setUploadDetails(details);
+  };
+
+  // Handle changes to default upload values
+  const handleDefaultValueChange = (field, value) => {
+    setDefaultUploadValues((prev) => ({
+      ...prev,
+      [field]: value,
+    }));
+
+    // Also update all current upload details with this new value
+    if (selectedFiles.length > 0) {
+      setUploadDetails((prev) =>
+        prev.map((detail) => ({
+          ...detail,
+          [field]: value,
+        }))
+      );
+    }
   };
 
   const handleDelete = async (id) => {
@@ -361,6 +383,41 @@ const Research = () => {
       <Card className="mb-8">
         <CardContent className="pt-6">
           <div className="grid gap-6">
+            {/* Default values section */}
+            <div className="border rounded-lg p-4 mb-4">
+              <h3 className="font-medium mb-3">Default Upload Settings</h3>
+              <p className="text-sm text-gray-500 mb-4">
+                Set these values before selecting files to apply them to all
+                uploads
+              </p>
+              <div className="grid gap-4">
+                <div className="grid gap-2">
+                  <Label htmlFor="default-category">Category</Label>
+                  <Select
+                    value={defaultUploadValues.category}
+                    onValueChange={(value) =>
+                      handleDefaultValueChange("category", value)
+                    }
+                  >
+                    <SelectTrigger id="default-category">
+                      <SelectValue placeholder="Select a category" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="Uncategorized Research">
+                        Uncategorized Research
+                      </SelectItem>
+                      <SelectItem value="International">
+                        International Conference
+                      </SelectItem>
+                      <SelectItem value="National">
+                        National Conference
+                      </SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+            </div>
+
             <div
               className="flex flex-col items-center justify-center p-6 border-2 border-dashed border-gray-300 rounded-lg bg-gray-50 hover:bg-gray-100 transition-colors cursor-pointer"
               onClick={triggerFileInput}
