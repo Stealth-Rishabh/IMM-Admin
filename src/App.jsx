@@ -9,6 +9,7 @@ import PlacementGallery from "./pages/dashboard/PlacementData";
 import Research from "./pages/dashboard/Research";
 import AwardGallery from "./pages/dashboard/AwardGallery";
 import Recruiters from "./pages/dashboard/Recruiters";
+import EduTour from "./pages/dashboard/EduTour";
 function App() {
   return (
     <BreadcrumbProvider>
@@ -23,6 +24,7 @@ function App() {
             <Route path="/placements" element={<PlacementGallery />} />
             <Route path="/award" element={<AwardGallery />} />
             <Route path="/recruiters" element={<Recruiters />} />
+            <Route path="/edutour" element={<EduTour />} />
           </Routes>
         </Dashboard>
       </Router>

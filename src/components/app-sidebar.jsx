@@ -97,6 +97,11 @@ const data = {
       url: "/recruiters",
       icon: Users,
     },
+    {
+      title: "EduTour",
+      url: "/edutour",
+      icon: GraduationCap,
+    },
     // {
     //   title: "Documentation",
     //   url: "#",
