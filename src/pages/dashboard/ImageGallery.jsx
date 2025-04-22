@@ -87,11 +87,19 @@ const ImageGallery = () => {
     setSelectedFiles(files);
 
     // Initialize upload details with default values
-    const details = files.map((file) => ({
-      title: file.name.split(".")[0],
-      category: "Uncategorized",
-      description: "",
-    }));
+    const details = files.map((file) => {
+      let title = file.name;
+      // Remove _11zon patterns with regex
+      title = title.replace(/_\d*_?11zon/g, "");
+      // Get everything before the last period
+      title = title.substring(0, title.lastIndexOf(".")) || title;
+
+      return {
+        title,
+        category: "Uncategorized",
+        description: "",
+      };
+    });
 
     setUploadDetails(details);
   };
@@ -365,6 +373,15 @@ const ImageGallery = () => {
             <div
               className="flex flex-col items-center justify-center p-6 border-2 border-dashed border-gray-300 rounded-lg bg-gray-50 hover:bg-gray-100 transition-colors cursor-pointer"
               onClick={triggerFileInput}
+              onDragOver={(e) => e.preventDefault()}
+              onDragEnter={(e) => e.preventDefault()}
+              onDrop={(e) => {
+                e.preventDefault();
+                const files = Array.from(e.dataTransfer.files);
+                if (files.length > 0) {
+                  handleFileChange({ target: { files } });
+                }
+              }}
             >
               <Upload className="h-10 w-10 text-gray-400 mb-2" />
               <p className="text-sm text-gray-600 mb-1">
@@ -448,13 +465,28 @@ const ImageGallery = () => {
                             <SelectItem value="Uncategorized">
                               Uncategorized
                             </SelectItem>
-                            <SelectItem value="Nature">Nature</SelectItem>
-                            <SelectItem value="Travel">Travel</SelectItem>
-                            <SelectItem value="Food">Food</SelectItem>
-                            <SelectItem value="People">People</SelectItem>
-                            <SelectItem value="Architecture">
-                              Architecture
+                            <SelectItem value="Campus">Campus</SelectItem>
+                            <SelectItem value="Faculty">Faculty</SelectItem>
+                            <SelectItem value="Student">Student</SelectItem>
+                            <SelectItem value="Sports">Sports</SelectItem>
+                            <SelectItem value="Events">Events</SelectItem>
+                            <SelectItem value="Library">Library</SelectItem>
+                            <SelectItem value="Canteen">Canteen</SelectItem>
+                            <SelectItem value="Infrastructure">
+                              Infrastructure
                             </SelectItem>
+                            <SelectItem value="Classroom">Classroom</SelectItem>
+                            <SelectItem value="Auditorium">
+                              Auditorium
+                            </SelectItem>
+                            <SelectItem value="Activities">
+                              Activities
+                            </SelectItem>
+                            <SelectItem value="Festivals">Festivals</SelectItem>
+                            <SelectItem value="Celebrations">
+                              Celebrations
+                            </SelectItem>
+                            <SelectItem value="Other">Other</SelectItem>
                           </SelectContent>
                         </Select>
                       </div>
@@ -550,11 +582,22 @@ const ImageGallery = () => {
                       <SelectItem value="Uncategorized">
                         Uncategorized
                       </SelectItem>
-                      <SelectItem value="Nature">Nature</SelectItem>
-                      <SelectItem value="Travel">Travel</SelectItem>
-                      <SelectItem value="Food">Food</SelectItem>
-                      <SelectItem value="People">People</SelectItem>
-                      <SelectItem value="Architecture">Architecture</SelectItem>
+                      <SelectItem value="Campus">Campus</SelectItem>
+                      <SelectItem value="Faculty">Faculty</SelectItem>
+                      <SelectItem value="Student">Student</SelectItem>
+                      <SelectItem value="Sports">Sports</SelectItem>
+                      <SelectItem value="Events">Events</SelectItem>
+                      <SelectItem value="Library">Library</SelectItem>
+                      <SelectItem value="Canteen">Canteen</SelectItem>
+                      <SelectItem value="Infrastructure">
+                        Infrastructure
+                      </SelectItem>
+                      <SelectItem value="Classroom">Classroom</SelectItem>
+                      <SelectItem value="Auditorium">Auditorium</SelectItem>
+                      <SelectItem value="Activities">Activities</SelectItem>
+                      <SelectItem value="Festivals">Festivals</SelectItem>
+                      <SelectItem value="Celebrations">Celebrations</SelectItem>
+                      <SelectItem value="Other">Other</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -699,11 +742,22 @@ const ImageGallery = () => {
                       <SelectItem value="Uncategorized">
                         Uncategorized
                       </SelectItem>
-                      <SelectItem value="Nature">Nature</SelectItem>
-                      <SelectItem value="Travel">Travel</SelectItem>
-                      <SelectItem value="Food">Food</SelectItem>
-                      <SelectItem value="People">People</SelectItem>
-                      <SelectItem value="Architecture">Architecture</SelectItem>
+                      <SelectItem value="Campus">Campus</SelectItem>
+                      <SelectItem value="Faculty">Faculty</SelectItem>
+                      <SelectItem value="Student">Student</SelectItem>
+                      <SelectItem value="Sports">Sports</SelectItem>
+                      <SelectItem value="Events">Events</SelectItem>
+                      <SelectItem value="Library">Library</SelectItem>
+                      <SelectItem value="Canteen">Canteen</SelectItem>
+                      <SelectItem value="Infrastructure">
+                        Infrastructure
+                      </SelectItem>
+                      <SelectItem value="Classroom">Classroom</SelectItem>
+                      <SelectItem value="Auditorium">Auditorium</SelectItem>
+                      <SelectItem value="Activities">Activities</SelectItem>
+                      <SelectItem value="Festivals">Festivals</SelectItem>
+                      <SelectItem value="Celebrations">Celebrations</SelectItem>
+                      <SelectItem value="Other">Other</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
