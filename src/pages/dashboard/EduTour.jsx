@@ -443,12 +443,10 @@ const EduTour = () => {
                       <SelectItem value="Uncategorized">
                         Uncategorized
                       </SelectItem>
-                      <SelectItem value="Industrial">Industrial</SelectItem>
-                      <SelectItem value="Educational">Educational</SelectItem>
-                      <SelectItem value="Field Trip">Field Trip</SelectItem>
-                      <SelectItem value="Heritage">Heritage</SelectItem>
-                      <SelectItem value="Adventure">Adventure</SelectItem>
-                      <SelectItem value="Other">Other</SelectItem>
+                      <SelectItem value="International">
+                        International
+                      </SelectItem>
+                      <SelectItem value="National">National</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -573,18 +571,10 @@ const EduTour = () => {
                             <SelectItem value="Uncategorized">
                               Uncategorized
                             </SelectItem>
-                            <SelectItem value="Industrial">
-                              Industrial
-                            </SelectItem>
-                            <SelectItem value="Educational">
-                              Educational
-                            </SelectItem>
-                            <SelectItem value="Field Trip">
-                              Field Trip
-                            </SelectItem>
-                            <SelectItem value="Heritage">Heritage</SelectItem>
-                            <SelectItem value="Adventure">Adventure</SelectItem>
-                            <SelectItem value="Other">Other</SelectItem>
+                            <SelectItem value="International">
+                        International
+                      </SelectItem>
+                      <SelectItem value="National">National</SelectItem>
                           </SelectContent>
                         </Select>
                       </div>
@@ -697,12 +687,10 @@ const EduTour = () => {
                       <SelectItem value="Uncategorized">
                         Uncategorized
                       </SelectItem>
-                      <SelectItem value="Industrial">Industrial</SelectItem>
-                      <SelectItem value="Educational">Educational</SelectItem>
-                      <SelectItem value="Field Trip">Field Trip</SelectItem>
-                      <SelectItem value="Heritage">Heritage</SelectItem>
-                      <SelectItem value="Adventure">Adventure</SelectItem>
-                      <SelectItem value="Other">Other</SelectItem>
+                      <SelectItem value="International">
+                        International
+                      </SelectItem>
+                      <SelectItem value="National">National</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -865,12 +853,10 @@ const EduTour = () => {
                       <SelectItem value="Uncategorized">
                         Uncategorized
                       </SelectItem>
-                      <SelectItem value="Industrial">Industrial</SelectItem>
-                      <SelectItem value="Educational">Educational</SelectItem>
-                      <SelectItem value="Field Trip">Field Trip</SelectItem>
-                      <SelectItem value="Heritage">Heritage</SelectItem>
-                      <SelectItem value="Adventure">Adventure</SelectItem>
-                      <SelectItem value="Other">Other</SelectItem>
+                      <SelectItem value="International">
+                        International
+                      </SelectItem>
+                      <SelectItem value="National">National</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>

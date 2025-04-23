@@ -429,6 +429,12 @@ const Recruiters = () => {
                       <SelectItem value="Summer Internship Recruiter">
                         Summer Internship Recruiter
                       </SelectItem>
+                      <SelectItem value="Live Project Recruiter">
+                        Live Project Recruiter
+                      </SelectItem>
+                      <SelectItem value="Home Page Recruiter">
+                        Home Page Recruiter
+                      </SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -536,6 +542,12 @@ const Recruiters = () => {
                             <SelectItem value="Summer Internship Recruiter">
                               Summer Internship Recruiter
                             </SelectItem>
+                            <SelectItem value="Live Project Recruiter">
+                              Live Project Recruiter
+                            </SelectItem>
+                            <SelectItem value="Home Page Recruiter">
+                              Home Page Recruiter
+                            </SelectItem>
                           </SelectContent>
                         </Select>
                       </div>
@@ -636,6 +648,12 @@ const Recruiters = () => {
                       </SelectItem>
                       <SelectItem value="Summer Internship Recruiter">
                         Summer Internship Recruiter
+                      </SelectItem>
+                      <SelectItem value="Live Project Recruiter">
+                        Live Project Recruiter
+                      </SelectItem>
+                      <SelectItem value="Home Page Recruiter">
+                        Home Page Recruiter
                       </SelectItem>
                     </SelectContent>
                   </Select>
@@ -792,6 +810,12 @@ const Recruiters = () => {
                       </SelectItem>
                       <SelectItem value="Summer Internship Recruiter">
                         Summer Internship Recruiter
+                      </SelectItem>
+                      <SelectItem value="Live Project Recruiter">
+                        Live Project Recruiter
+                      </SelectItem>
+                      <SelectItem value="Home Page Recruiter">
+                        Home Page Recruiter
                       </SelectItem>
                     </SelectContent>
                   </Select>
