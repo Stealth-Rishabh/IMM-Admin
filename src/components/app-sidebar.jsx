@@ -102,6 +102,11 @@ const data = {
       url: "/edutour",
       icon: GraduationCap,
     },
+    {
+      title: "Banner Images",
+      url: "/banner",
+      icon: Image,
+    },
     // {
     //   title: "Documentation",
     //   url: "#",
