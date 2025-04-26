@@ -11,6 +11,7 @@ import AwardGallery from "./pages/dashboard/AwardGallery";
 import Recruiters from "./pages/dashboard/Recruiters";
 import EduTour from "./pages/dashboard/EduTour";
 import BannerManager from "./pages/dashboard/BannerManager";
+import TestimonialGallery from "./pages/dashboard/TestimonialGallery";
 function App() {
   return (
     <BreadcrumbProvider>
@@ -27,6 +28,7 @@ function App() {
             <Route path="/recruiters" element={<Recruiters />} />
             <Route path="/edutour" element={<EduTour />} />
             <Route path="/banner" element={<BannerManager />} />
+            <Route path="/testimonial" element={<TestimonialGallery />} />
           </Routes>
         </Dashboard>
       </Router>

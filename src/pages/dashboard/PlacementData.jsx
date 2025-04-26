@@ -988,15 +988,15 @@ const PlacementData = () => {
                   <Label htmlFor="logo">Logo</Label>
                   <div className="flex items-center gap-2">
                     {newLogoPreview || currentImage.logo_url ? (
-                      <div className="h-12 w-12 rounded-md overflow-hidden bg-gray-100 flex-shrink-0">
+                      <div className="h-10 w-40 aspect-video rounded-md overflow-hidden bg-gray-100 flex-shrink-0">
                         <img
                           src={newLogoPreview || currentImage.logo_url}
                           alt="Logo Preview"
-                          className="h-full w-full object-cover"
+                          className="h-full w-full object-contain"
                         />
                       </div>
                     ) : (
-                      <div className="h-12 w-12 rounded-md bg-gray-100 flex items-center justify-center">
+                      <div className="h-12 w-auto rounded-md bg-gray-100 flex items-center justify-center">
                         <ImageIcon className="h-6 w-6 text-gray-400" />
                       </div>
                     )}

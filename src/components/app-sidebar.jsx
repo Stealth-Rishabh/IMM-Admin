@@ -17,6 +17,7 @@ import {
   GraduationCap,
   School,
   Award,
+  UserRound,
 } from "lucide-react";
 
 import { NavMain } from "@/components/nav-main";
@@ -106,6 +107,11 @@ const data = {
       title: "Banner Images",
       url: "/banner",
       icon: Image,
+    },
+    {
+      title: "Testimonials",
+      url: "/testimonial",
+      icon: UserRound,
     },
     // {
     //   title: "Documentation",
