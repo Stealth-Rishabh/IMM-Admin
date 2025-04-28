@@ -370,7 +370,7 @@ const BannerManager = () => {
     "Industry Visits",
     "Corporate Events",
     "Recruit and Partner",
-    "Faculty & Research",
+    "Faculty",
     "Research",
     "Events & Activities",
     "Clubs at IMM",

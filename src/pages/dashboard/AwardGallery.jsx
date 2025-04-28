@@ -4,6 +4,7 @@ import { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import {
   Dialog,
@@ -456,7 +457,7 @@ const AwardGallery = () => {
                         <Label htmlFor={`description-${index}`}>
                           Description
                         </Label>
-                        <Input
+                        <Textarea
                           id={`description-${index}`}
                           value={uploadDetails[index]?.description || ""}
                           onChange={(e) =>
@@ -467,6 +468,7 @@ const AwardGallery = () => {
                             )
                           }
                           placeholder="Enter image description"
+                          rows={3}
                         />
                       </div>
                     </div>
@@ -689,7 +691,7 @@ const AwardGallery = () => {
                 </div>
                 <div className="grid gap-2">
                   <Label htmlFor="description">Description</Label>
-                  <Input
+                  <Textarea
                     id="description"
                     name="description"
                     value={editFormData.description}
@@ -700,6 +702,7 @@ const AwardGallery = () => {
                       })
                     }
                     placeholder="Enter image description"
+                    rows={3}
                   />
                 </div>
               </div>

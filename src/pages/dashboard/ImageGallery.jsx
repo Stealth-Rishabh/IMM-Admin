@@ -383,7 +383,7 @@ const ImageGallery = () => {
           {!isLoading && (
             <>
               Showing {images.filter(filterImages).length} of{" "}
-              {images.filter(filterImages).length} images
+              {images.filter((image) => image.category !== "International" && image.category !== "National" && image.category !== "Award" && image.category !== "Uncategorized Research").length} images
             </>
           )}
         </div>
