@@ -141,7 +141,7 @@ export default function Events() {
         category: formData.get("category"),
         title: formData.get("title"),
         tags: tags,
-        description: formData.get("description"),
+        description: formData.get("description") || null,
         gallery: galleryPreviews,
       };
 
@@ -184,7 +184,7 @@ export default function Events() {
       category: formData.get("edit-category"),
       title: formData.get("edit-title"),
       tags: tags,
-      description: formData.get("edit-description"),
+      description: formData.get("edit-description") || null,
       gallery: galleryPreviews,
     };
 
@@ -504,9 +504,8 @@ export default function Events() {
                 <Textarea
                   id="description"
                   name="description"
-                  placeholder="Enter event description"
+                  placeholder="Enter event description (optional)"
                   rows={5}
-                  required
                 />
               </div>
 
@@ -602,7 +601,7 @@ export default function Events() {
               </div>
             ) : (
               <div className="space-y-6">
-                {filteredEvents.map((event) => (
+                {filteredEvents.reverse().map((event) => (
                   <Card key={event.id} className="overflow-hidden">
                     <div className="md:flex">
                       <div className="relative h-48 md:h-auto md:w-1/4">
@@ -623,6 +622,15 @@ export default function Events() {
                             <span className="text-sm text-muted-foreground">
                               {event.date}
                             </span>
+                            {(!event.description ||
+                              !event.description.trim()) && (
+                              <Badge
+                                variant="outline"
+                                className="bg-gray-100 text-gray-600 border-gray-300"
+                              >
+                                No Description
+                              </Badge>
+                            )}
                           </div>
                           <div className="flex gap-2">
                             <Button
@@ -645,7 +653,13 @@ export default function Events() {
                           {event.title}
                         </h3>
                         <p className="flex-grow mb-4 text-muted-foreground line-clamp-3">
-                          {event.description}
+                          {event.description && event.description.trim() ? (
+                            event.description
+                          ) : (
+                            <span className="italic text-gray-400">
+                              [No description]
+                            </span>
+                          )}
                         </p>
                         <div className="flex flex-wrap gap-2">
                           {event.tags.map((tag, index) => (
@@ -918,8 +932,8 @@ export default function Events() {
                   id="edit-description"
                   name="edit-description"
                   defaultValue={editingEvent.description}
+                  placeholder="Enter event description (optional)"
                   rows={5}
-                  required
                 />
               </div>
 
