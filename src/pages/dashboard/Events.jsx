@@ -146,10 +146,10 @@ export default function Events() {
       };
 
       // Call the server action to create the event
-      const createdEvent = await createEvent(eventData);
+      await createEvent(eventData);
 
-      // Update the local state with the returned event
-      setEvents([...events, createdEvent]);
+      // Reload events to get the latest data from the server
+      await loadEvents();
 
       // Reset form fields
       setTags([]);
@@ -192,10 +192,8 @@ export default function Events() {
       // Call the server action to update the event
       await updateEvent(updatedEvent);
 
-      // Update the local state
-      setEvents(
-        events.map((e) => (e.id === updatedEvent.id ? updatedEvent : e))
-      );
+      // Reload all events to get the latest data from the server
+      await loadEvents();
 
       // Close the dialog
       setIsEditDialogOpen(false);
@@ -217,8 +215,8 @@ export default function Events() {
       // Call the server action to delete the event
       await deleteEvent(eventToDelete);
 
-      // Update the local state
-      setEvents(events.filter((e) => e.id !== eventToDelete));
+      // Reload events to get the latest data from the server
+      await loadEvents();
 
       // Close the dialog
       setDeleteConfirmOpen(false);
@@ -276,6 +274,20 @@ export default function Events() {
     setFilterName("");
     setFilterCategory("");
     setFilterDate("");
+  };
+
+  // Extract loadEvents function so we can call it after updates
+  const loadEvents = async () => {
+    try {
+      const response = await fetch(
+        "https://stealthlearn.in/imm-admin/api/index2.php?resource=events"
+      );
+      const data = await response.json();
+      setEvents(data);
+      setFilteredEvents(data);
+    } catch (error) {
+      console.error("Error loading events:", error);
+    }
   };
 
   return (
