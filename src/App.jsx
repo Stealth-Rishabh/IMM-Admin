@@ -12,12 +12,14 @@ import Recruiters from "./pages/dashboard/Recruiters";
 import EduTour from "./pages/dashboard/EduTour";
 import BannerManager from "./pages/dashboard/BannerManager";
 import TestimonialGallery from "./pages/dashboard/TestimonialGallery";
+import { LoginForm } from "./pages/auth/LoginForm";
 function App() {
   return (
     <BreadcrumbProvider>
       <Router>
         <Dashboard>
           <Routes>
+            <Route path="/login" element={<LoginForm />} />
             <Route path="/" element={<ImageGallery />} />
             <Route path="/research" element={<Research />} />
             <Route path="/events" element={<Events />} />

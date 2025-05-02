@@ -9,7 +9,7 @@ export function LoginForm({
   ...props
 }) {
   return (
-    (<div className={cn("flex w-[90%] sm:min-w-[800px] mx-auto flex-col gap-6", className)} {...props}>
+    (<div className={cn("flex max-w-xl sm:min-w-[800px] mx-auto flex-col gap-6", className)} {...props}>
       <Card className="overflow-hidden">
         <CardContent className="grid p-0 md:grid-cols-2">
           <form className="p-6 md:p-8">

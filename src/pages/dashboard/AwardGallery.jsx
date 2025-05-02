@@ -367,7 +367,7 @@ const AwardGallery = () => {
         <CardContent className="pt-6">
           <div className="grid gap-6">
             <div
-              className="flex flex-col items-center justify-center p-6 border-2 border-dashed border-gray-300 rounded-lg bg-gray-50 hover:bg-gray-100 transition-colors cursor-pointer"
+              className="flex flex-col items-center justify-center p-6 border-2 border-dashed border-gray-300 dark:border-gray-700 rounded-lg bg-gray-50 hover:bg-gray-100 transition-colors cursor-pointer dark:bg-black dark:hover:bg-gray-950"
               onClick={triggerFileInput}
             >
               <Upload className="h-10 w-10 text-gray-400 mb-2" />
