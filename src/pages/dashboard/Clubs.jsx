@@ -61,19 +61,21 @@ export default function Clubs() {
   const [filterCategory, setFilterCategory] = useState("");
   const [filterDate, setFilterDate] = useState("");
 
+  // Extract loadClubs function so we can call it after updates
+  const loadClubs = async () => {
+    try {
+      const response = await fetch(
+        "https://stealthlearn.in/imm-admin/api/index3.php?resource=clubs"
+      );
+      const data = await response.json();
+      setClubs(data);
+      setFilteredClubs(data);
+    } catch (error) {
+      console.error("Error loading clubs:", error);
+    }
+  };
+
   useEffect(() => {
-    const loadClubs = async () => {
-      try {
-        const response = await fetch(
-          "https://stealthlearn.in/imm-admin/api/index3.php?resource=clubs"
-        );
-        const data = await response.json();
-        setClubs(data);
-        setFilteredClubs(data);
-      } catch (error) {
-        console.error("Error loading clubs:", error);
-      }
-    };
     loadClubs();
   }, []);
 
@@ -199,10 +201,10 @@ export default function Clubs() {
       };
 
       // Call the server action to create the club
-      const createdClub = await createClub(clubData);
+      await createClub(clubData);
 
-      // Update the local state with the returned club
-      setClubs([...clubs, createdClub]);
+      // Reload clubs to get the latest data from the server
+      await loadClubs();
 
       // Reset form fields
       setTags([]);
@@ -245,8 +247,8 @@ export default function Clubs() {
       // Call the server action to update the club
       await updateClub(updatedClub);
 
-      // Update the local state
-      setClubs(clubs.map((c) => (c.id === updatedClub.id ? updatedClub : c)));
+      // Reload clubs to get the latest data from the server
+      await loadClubs();
 
       // Close the dialog
       setIsEditDialogOpen(false);
@@ -268,8 +270,8 @@ export default function Clubs() {
       // Call the server action to delete the club
       await deleteClub(clubToDelete);
 
-      // Update the local state
-      setClubs(clubs.filter((c) => c.id !== clubToDelete));
+      // Reload clubs to get the latest data from the server
+      await loadClubs();
 
       // Close the dialog
       setDeleteConfirmOpen(false);
@@ -425,7 +427,6 @@ export default function Clubs() {
                               : thumbnailPreview || "/placeholder.svg"
                           }
                           alt="Thumbnail preview"
-                          fill
                           className="object-cover h-full w-full"
                         />
                         <Button
@@ -480,7 +481,6 @@ export default function Clubs() {
                                   : preview || "/placeholder.svg"
                               }
                               alt={`Gallery image ${index + 1}`}
-                              fill
                               className="object-cover h-full w-full"
                             />
                             <Button
@@ -603,10 +603,12 @@ export default function Clubs() {
               </div>
             ) : (
               <div className="space-y-6">
-                {filteredClubs.map((club) => (
-                  <Card key={club.id} className="overflow-hidden">
-                    <div className="md:flex">
-                      <div className="relative h-48 md:h-auto md:w-1/4">
+                {filteredClubs
+                  .sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
+                  .map((club) => (
+                    <Card key={club.id} className="overflow-hidden">
+                      <div className="md:flex">
+                        <div className="relative h-48 md:h-auto md:w-1/4">
                         <img
                           src={
                             club.image && !club.image.includes("http")
@@ -614,7 +616,6 @@ export default function Clubs() {
                               : club.image || "/placeholder.svg"
                           }
                           alt={club.title}
-                          fill
                           className="object-cover h-full w-full"
                         />
                       </div>
@@ -673,8 +674,7 @@ export default function Clubs() {
                                         : img || "/placeholder.svg"
                                     }
                                     alt={`Gallery image ${index + 1}`}
-                                    fill
-                                    className="object-cover rounded-md"
+                                    className="object-cover rounded-md h-full w-full"
                                   />
                                 </div>
                               ))}
@@ -835,8 +835,7 @@ export default function Clubs() {
                               : thumbnailPreview || "/placeholder.svg"
                           }
                           alt="Thumbnail preview"
-                          fill
-                          className="object-cover"
+                          className="object-cover h-full w-full"
                         />
                         <Button
                           type="button"
@@ -890,7 +889,6 @@ export default function Clubs() {
                                   : preview || "/placeholder.svg"
                               }
                               alt={`Gallery image ${index + 1}`}
-                              fill
                               className="object-cover h-full w-full"
                             />
                             <Button

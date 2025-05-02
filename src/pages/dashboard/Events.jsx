@@ -613,9 +613,11 @@ export default function Events() {
               </div>
             ) : (
               <div className="space-y-6">
-                {filteredEvents.reverse().map((event) => (
-                  <Card key={event.id} className="overflow-hidden">
-                    <div className="md:flex">
+                {filteredEvents
+                  .sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
+                  .map((event) => (
+                    <Card key={event.id} className="overflow-hidden">
+                      <div className="md:flex">
                       <div className="relative h-48 md:h-auto md:w-1/4">
                         <img
                           src={
