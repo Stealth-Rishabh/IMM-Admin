@@ -376,14 +376,23 @@ const ImageGallery = () => {
   };
 
   return (
-    <div className="border border-gray-200 rounded-lg mx-auto p-6 ">
+    <div className="border border-gray-200 dark:border-gray-800 dark:border-gray-800 rounded-lg mx-auto p-6 ">
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-bold">Image Gallery</h1>
         <div className="text-sm text-gray-500">
           {!isLoading && (
             <>
               Showing {images.filter(filterImages).length} of{" "}
-              {images.filter((image) => image.category !== "International" && image.category !== "National" && image.category !== "Award" && image.category !== "Uncategorized Research").length} images
+              {
+                images.filter(
+                  (image) =>
+                    image.category !== "International" &&
+                    image.category !== "National" &&
+                    image.category !== "Award" &&
+                    image.category !== "Uncategorized Research"
+                ).length
+              }{" "}
+              images
             </>
           )}
         </div>

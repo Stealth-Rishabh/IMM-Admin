@@ -424,7 +424,7 @@ const PlacementData = () => {
   };
 
   return (
-    <div className="border border-gray-200 rounded-lg mx-auto p-6 ">
+    <div className="border border-gray-200 dark:border-gray-800 rounded-lg mx-auto p-6 ">
       <div className="flex justify-between items-center mb-4">
         <h1 className="text-2xl font-bold">Placement Data</h1>
         <div className="text-sm text-gray-500">

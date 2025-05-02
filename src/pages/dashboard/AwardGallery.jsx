@@ -349,7 +349,7 @@ const AwardGallery = () => {
   };
 
   return (
-    <div className="border border-gray-200 rounded-lg mx-auto p-6 ">
+    <div className="border border-gray-200 dark:border-gray-800 rounded-lg mx-auto p-6 ">
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-bold">Award Gallery</h1>
         <div className="text-sm text-gray-500">

@@ -404,7 +404,7 @@ const EduTour = () => {
   };
 
   return (
-    <div className="border border-gray-200 rounded-lg mx-auto p-6 ">
+    <div className="border border-gray-200 dark:border-gray-800 rounded-lg mx-auto p-6 ">
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-bold">Educational Tours</h1>
         <div className="text-sm text-gray-500">
@@ -572,9 +572,9 @@ const EduTour = () => {
                               Uncategorized
                             </SelectItem>
                             <SelectItem value="International">
-                        International
-                      </SelectItem>
-                      <SelectItem value="National">National</SelectItem>
+                              International
+                            </SelectItem>
+                            <SelectItem value="National">National</SelectItem>
                           </SelectContent>
                         </Select>
                       </div>
