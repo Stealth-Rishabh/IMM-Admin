@@ -290,9 +290,16 @@ export default function Events() {
     }
   };
 
+  // Helper function to check if a date is valid
+  const isValidDate = (dateString) => {
+    if (!dateString || dateString === "0000-00-00") return false;
+    const date = new Date(dateString);
+    return date instanceof Date && !isNaN(date);
+  };
+
   return (
     <div className="mx-auto space-y-8">
-      <div className="p-6 bg-white border shadow-sm dark:bg-gray-950 rounded-xl">
+      <div className="p-6 bg-white border shadow-sm dark:bg-black rounded-xl">
         <h1 className="mb-6 text-2xl font-bold">Event Management</h1>
 
         <Tabs defaultValue="create">
@@ -614,104 +621,106 @@ export default function Events() {
             ) : (
               <div className="space-y-6">
                 {filteredEvents
-                  .sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
+                  .sort(
+                    (a, b) => new Date(b.created_at) - new Date(a.created_at)
+                  )
                   .map((event) => (
                     <Card key={event.id} className="overflow-hidden">
                       <div className="md:flex">
-                      <div className="relative h-48 md:h-auto md:w-1/4">
-                        <img
-                          src={
-                            event.image && !event.image.includes("http")
-                              ? `${Fetch_URL}${event.image}`
-                              : event.image || "/placeholder.svg"
-                          }
-                          alt={event.title}
-                          className="object-cover h-full w-full"
-                        />
-                      </div>
-                      <CardContent className="flex flex-col p-6 md:w-3/4">
-                        <div className="flex items-center justify-between mb-2">
-                          <div className="flex items-center gap-2">
-                            <Badge>{event.category}</Badge>
-                            <span className="text-sm text-muted-foreground">
-                              {event.date}
-                            </span>
-                            {(!event.description ||
-                              !event.description.trim()) && (
-                              <Badge
-                                variant="outline"
-                                className="bg-gray-100 text-gray-600 border-gray-300"
-                              >
-                                No Description
-                              </Badge>
-                            )}
-                          </div>
-                          <div className="flex gap-2">
-                            <Button
-                              variant="outline"
-                              size="icon"
-                              onClick={() => handleEdit(event)}
-                            >
-                              <Edit className="w-4 h-4" />
-                            </Button>
-                            <Button
-                              variant="destructive"
-                              size="icon"
-                              onClick={() => confirmDelete(event.id)}
-                            >
-                              <Trash2 className="w-4 h-4" />
-                            </Button>
-                          </div>
+                        <div className="relative h-48 md:h-auto md:w-1/4">
+                          <img
+                            src={
+                              event.image && !event.image.includes("http")
+                                ? `${Fetch_URL}${event.image}`
+                                : event.image || "/placeholder.svg"
+                            }
+                            alt={event.title}
+                            className="object-cover h-full w-full"
+                          />
                         </div>
-                        <h3 className="mb-2 text-xl font-bold">
-                          {event.title}
-                        </h3>
-                        <p className="flex-grow mb-4 text-muted-foreground line-clamp-3">
-                          {event.description && event.description.trim() ? (
-                            event.description
-                          ) : (
-                            <span className="italic text-gray-400">
-                              [No description]
-                            </span>
-                          )}
-                        </p>
-                        <div className="flex flex-wrap gap-2">
-                          {event.tags.map((tag, index) => (
-                            <Badge key={index} variant="outline">
-                              {tag}
-                            </Badge>
-                          ))}
-                        </div>
-
-                        {event.gallery.length > 0 && (
-                          <div className="mt-4  max-w-[60vw]">
-                            <p className="mb-2 text-sm font-medium">
-                              Gallery ({event.gallery.length})
-                            </p>
-                            <div className="flex gap-2 pb-2 overflow-x-auto">
-                              {event.gallery.map((img, index) => (
-                                <div
-                                  key={index}
-                                  className="relative flex-shrink-0 w-16 h-16"
+                        <CardContent className="flex flex-col p-6 md:w-3/4">
+                          <div className="flex items-center justify-between mb-2">
+                            <div className="flex items-center gap-2">
+                              <Badge>{event.category}</Badge>
+                              <span className="text-sm text-muted-foreground">
+                                {event.date}
+                              </span>
+                              {(!event.description ||
+                                !event.description.trim()) && (
+                                <Badge
+                                  variant="outline"
+                                  className="bg-gray-100 text-gray-600 border-gray-300"
                                 >
-                                  <img
-                                    src={
-                                      img && !img.includes("http")
-                                        ? `${Fetch_URL}${img}`
-                                        : img || "/placeholder.svg"
-                                    }
-                                    alt={`Gallery image ${index + 1}`}
-                                    className="object-cover rounded-md h-full w-full"
-                                  />
-                                </div>
-                              ))}
+                                  No Description
+                                </Badge>
+                              )}
+                            </div>
+                            <div className="flex gap-2">
+                              <Button
+                                variant="outline"
+                                size="icon"
+                                onClick={() => handleEdit(event)}
+                              >
+                                <Edit className="w-4 h-4" />
+                              </Button>
+                              <Button
+                                variant="destructive"
+                                size="icon"
+                                onClick={() => confirmDelete(event.id)}
+                              >
+                                <Trash2 className="w-4 h-4" />
+                              </Button>
                             </div>
                           </div>
-                        )}
-                      </CardContent>
-                    </div>
-                  </Card>
-                ))}
+                          <h3 className="mb-2 text-xl font-bold">
+                            {event.title}
+                          </h3>
+                          <p className="flex-grow mb-4 text-muted-foreground line-clamp-3">
+                            {event.description && event.description.trim() ? (
+                              event.description
+                            ) : (
+                              <span className="italic text-gray-400">
+                                [No description]
+                              </span>
+                            )}
+                          </p>
+                          <div className="flex flex-wrap gap-2">
+                            {event.tags.map((tag, index) => (
+                              <Badge key={index} variant="outline">
+                                {tag}
+                              </Badge>
+                            ))}
+                          </div>
+
+                          {event.gallery.length > 0 && (
+                            <div className="mt-4  max-w-[60vw]">
+                              <p className="mb-2 text-sm font-medium">
+                                Gallery ({event.gallery.length})
+                              </p>
+                              <div className="flex gap-2 pb-2 overflow-x-auto">
+                                {event.gallery.map((img, index) => (
+                                  <div
+                                    key={index}
+                                    className="relative flex-shrink-0 w-16 h-16"
+                                  >
+                                    <img
+                                      src={
+                                        img && !img.includes("http")
+                                          ? `${Fetch_URL}${img}`
+                                          : img || "/placeholder.svg"
+                                      }
+                                      alt={`Gallery image ${index + 1}`}
+                                      className="object-cover rounded-md h-full w-full"
+                                    />
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+                          )}
+                        </CardContent>
+                      </div>
+                    </Card>
+                  ))}
               </div>
             )}
           </TabsContent>
@@ -754,7 +763,11 @@ export default function Events() {
                       name="edit-date"
                       type="date"
                       defaultValue={
-                        new Date(editingEvent.date).toISOString().split("T")[0]
+                        isValidDate(editingEvent.date)
+                          ? new Date(editingEvent.date)
+                              .toISOString()
+                              .split("T")[0]
+                          : ""
                       }
                       className="pl-10"
                       required

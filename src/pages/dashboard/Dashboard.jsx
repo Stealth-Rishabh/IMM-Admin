@@ -33,7 +33,7 @@ export default function Dashboard({ children }) {
                 </BreadcrumbItem>
                 <BreadcrumbSeparator className="hidden md:block" />
                 <BreadcrumbItem>
-                  <BreadcrumbPage>{currentBreadcrumb}</BreadcrumbPage>
+                  <BreadcrumbPage className="dark:text-white">{currentBreadcrumb}</BreadcrumbPage>
                 </BreadcrumbItem>
               </BreadcrumbList>
             </Breadcrumb>

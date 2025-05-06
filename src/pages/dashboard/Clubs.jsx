@@ -283,7 +283,7 @@ export default function Clubs() {
 
   return (
     <div className="mx-auto space-y-8">
-      <div className="p-6 bg-white border shadow-sm dark:bg-gray-950 rounded-xl">
+      <div className="p-6 bg-white border shadow-sm dark:bg-black rounded-xl">
         <h1 className="mb-6 text-2xl font-bold">Club Management</h1>
 
         <Tabs defaultValue="create">
