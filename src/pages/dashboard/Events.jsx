@@ -576,12 +576,19 @@ export default function Events() {
                         <SelectValue placeholder="All Categories" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="all">All Categories</SelectItem>
-                        {eventCategories.map((category) => (
-                          <SelectItem key={category} value={category}>
-                            {category}
-                          </SelectItem>
-                        ))}
+                        <SelectItem value="all">
+                          All Categories ({events.length})
+                        </SelectItem>
+                        {eventCategories.map((category) => {
+                          const count = events.filter(
+                            (event) => event.category === category
+                          ).length;
+                          return (
+                            <SelectItem key={category} value={category}>
+                              {category} ({count})
+                            </SelectItem>
+                          );
+                        })}
                       </SelectContent>
                     </Select>
                   </div>
